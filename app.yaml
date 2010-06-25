@@ -1,0 +1,42 @@
+application: hime
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+
+- url: /
+  script: smth.py
+
+- url: /static
+  static_dir: static
+
+- url: /smth/.*
+  script: smth.py
+
+- url: /board/.*
+  script: smth.py
+
+- url: /subject/.*
+  script: smth.py
+
+- url: /post/.*
+  script: smth.py
+
+- url: /ajaxpost/.*
+  script: smth.py
+
+- url: /jj/.*
+  script: jj.py
+
+- url: /jjboard/.*
+  script: jj.py
+
+- url: /jjsubject/.*
+  script: jj.py
+
+skip_files:
+
+- ^.svn.*
+- ^(.*/)?.*\.py[co]
+  
