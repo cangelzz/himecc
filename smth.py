@@ -9,7 +9,7 @@ from google.appengine.api import urlfetch
 from google.appengine.api.urlfetch import fetch
 from google.appengine.api import images
 import re 
-from define import id2board, board2id, favor
+from define import id2board, board2id, favor, favor2chs
 
 myContentType = "text/html; charset='utf-8'"
 myHeader = """<html><head>
@@ -36,7 +36,7 @@ class MainPage(webapp.RequestHandler):
         self.response.out.write("""<h1 class="navjump"><input id='boardtogo' type="text" /><a onclick="this.href='/board/'+document.getElementById('boardtogo').value" class='btnRight0'>Go</a></h1>""")
         self.response.out.write('<ul class="boards">')
         for b in favor:
-            self.response.out.write("<li><a href='/board/%s'>%s</a></li>" % (b, b.upper()))
+            self.response.out.write("<li><a href='/board/%s'><div style='display:inline-block'>%s</div><div style='display:inline-block;float:right'>%s</div></a></li>" % (b, b.upper(), favor2chs[b]))
         self.response.out.write("</ul>")
         self.response.out.write(myFooter)
 
@@ -67,7 +67,7 @@ class Board(webapp.RequestHandler):
             self.response.out.write(navlink)
             self.response.out.write("<ul class='threads'>")
             for g1, g2 in zip(bname_and_id, title_and_author):
-                self.response.out.write(("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (g1[0], g1[1], g2[1], g2[0])))
+                self.response.out.write(("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span> <span class='boardinth'>[%s]</span></a></li>" % (g1[0], g1[1], g2[1], g2[0], g1[0])))
             self.response.out.write("</ul>")
             self.response.out.write(navlink)
             self.response.out.write(myFooter)
