@@ -395,7 +395,6 @@ li.data_prog {
 
 }
 
-/*  Creates a button using a 18x30 image */
 .btnLeft 
 {
     float: left;
@@ -435,6 +434,82 @@ li.data_prog {
 	/* The left corner is 12 pixels wide. The right corner is 5 pixels wide and the middle part is 1 pixel. */
 	-webkit-border-image: url(btn_left.png) 0 5 0 12;		
 }
+
+/*  Creates a button using a 18x30 image */
+.btnLeft0
+{
+    float: left;
+    text-decoration: none;
+	text-align: center;
+
+    display: inline-block;
+	
+	height: 30px;
+	
+	/* Use the highest button height to ensure that text will vertically align on all buttons */
+	line-height: 28px;
+	
+	font-size: 14px;
+	font-weight: bold;
+	font-family: Helvetica;
+	color: #3c491a;
+	
+	text-decoration: none;
+	text-align: center;
+	
+	padding: 0;
+	margin: 0;
+
+
+	color: #3c491a;
+	
+	/* Put a 1 pixel blur black shadow below the button's text */
+	text-shadow: #f5f4d7 0px 1px 1px;
+	border-width: 0px 5px 0px 12px;   
+	
+	
+	/* -webkit-border-image divides the leftButton image into 2 corners and middle part.	*/
+	/* The left corner is 12 pixels wide. The right corner is 5 pixels wide and the middle part is 1 pixel. */
+	-webkit-border-image: url(btn_left.png) 0 5 0 12;		
+}
+
+.btnRight0
+{
+    float: right;
+  	text-decoration: none;
+	text-align: center;
+    display: inline-block;
+	
+	height: 30px;
+	
+	/* Use the highest button height to ensure that text will vertically align on all buttons */
+	line-height: 28px;
+		
+	font-size: 14px;
+	font-weight: bold;
+	font-family: Helvetica;
+	color: #3c491a;
+	
+	text-decoration: none;
+	text-align: center;
+	
+	padding: 0;
+	margin: 0;
+
+
+	color: #3c491a;
+
+	border-width: 0px 12px 0px 5px;
+
+	text-shadow: #f5f4d7 0px 1px 1px;
+	letter-spacing: -1px;
+	
+	/* -webkit-border-image divides the rightButton image into three parts. */
+	/* The right and left corners of the image are respectively 12 pixels and 5 pixels wide. */
+	/* This leaves 1 pixel for the midlle part of the image.		*/
+	-webkit-border-image: url(btn_right.png) 0 12 0 5;
+}
+
 
 /* Creates a button using a 18x30 image */
 .btnRight	 
@@ -477,3 +552,41 @@ li.data_prog {
 	-webkit-border-image: url(btn_right.png) 0 12 0 5;
 }
 
+.btnCenterRight	 
+{
+    float: right;
+  	text-decoration: none;
+    display: inline-block;
+	
+	height: 30px;
+	
+	/* Use the highest button height to ensure that text will vertically align on all buttons */
+	line-height: 28px;			
+	
+	font-size: 14px;
+	font-weight: bold;
+	font-family: Helvetica;
+	color: #3c491a;
+	
+	padding: 0;
+	margin: 0;
+
+
+	color: #3c491a;
+
+	border-width: 0px 12px 0px 5px;
+
+	text-shadow: #f5f4d7 0px 1px 1px;
+	letter-spacing: -1px;
+	
+	/* -webkit-border-image divides the rightButton image into three parts. */
+	/* The right and left corners of the image are respectively 12 pixels and 5 pixels wide. */
+	/* This leaves 1 pixel for the midlle part of the image.		*/
+	-webkit-border-image: url(btn_center.png) 0 12 0 5;
+}
+.hidediv
+{
+    padding-left: 10px;
+    text-align: center;
+    display: none;
+}
