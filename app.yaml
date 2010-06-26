@@ -35,8 +35,15 @@ handlers:
 - url: /jjsubject/.*
   script: jj.py
 
-skip_files:
-
-- ^.svn.*
-- ^(.*/)?.*\.py[co]
-  
+skip_files: |
+ ^(.*/)?(
+ (app\.yaml)|
+ (app\.yml)|
+ (index\.yaml)|
+ (index\.yml)|
+ (#.*#)|
+ (.*~)|
+ (.*\.py[co])|
+ (.*/RCS/.*)|
+ (\..*)|
+ )$
