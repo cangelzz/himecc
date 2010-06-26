@@ -12,11 +12,11 @@ import re
 from define import id2board, board2id, favor
 
 myContentType = "text/html; charset='utf-8'"
-myHeader = """<html><header>
+myHeader = """<html><head>
 <link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
-</header><body>"""
+</head><body>"""
 myFooter = """</body></html>"""
 
 def convertFromGB2312ToUTF8(onestr):
@@ -33,7 +33,7 @@ class MainPage(webapp.RequestHandler):
         self.response.headers['Content-Type'] = myContentType
         self.response.out.write(myHeader)
         self.response.out.write("<h1>Newsmth</h1>")
-        self.response.out.write("""<h1 class="navjump"><input id='boardtogo' type="text" /><a onclick="this.href='/board/'+document.getElementById('boardtogo').value" class='btnRight'>Go</a></h1>""")
+        self.response.out.write("""<h1 class="navjump"><input id='boardtogo' type="text" /><a onclick="this.href='/board/'+document.getElementById('boardtogo').value" class='btnRight0'>Go</a></h1>""")
         self.response.out.write('<ul class="boards">')
         for b in favor:
             self.response.out.write("<li><a href='/board/%s'>%s</a></li>" % (b, b.upper()))
@@ -63,7 +63,7 @@ class Board(webapp.RequestHandler):
             self.response.headers['Content-Type'] = myContentType
             self.response.out.write(myHeader)
             self.response.out.write("<h1>%s</h1>" % board.upper())
-            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft'>Prev</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a></h1>"
+            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a></h1>"
             self.response.out.write(navlink)
             self.response.out.write("<ul class='threads'>")
             for g1, g2 in zip(bname_and_id, title_and_author):
@@ -85,9 +85,9 @@ class Board(webapp.RequestHandler):
         self.response.out.write(myHeader)
         self.response.out.write("<h1>%s</h1>" % board.upper())
         if (isLast):
-            navlink = "<h1 class='nav'><a href='%s' class='btnLeft'>Prev</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a></h1>" % lastPage
+            navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a></h1>" % lastPage
         else:
-            navlink = "<h1 class='nav'><a href='%s' class='btnLeft'>Prev</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a><a href='%s' class='btnRight'>Next</a></h1>" % (lastPage, nextPage)
+            navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a><a href='%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, nextPage)
 
         self.response.out.write(navlink)
         self.response.out.write("<ul class='threads'>")
@@ -188,24 +188,35 @@ class Subject(webapp.RequestHandler):
         curPage = int(m.group(2))
         self.response.out.write(myHeader)
         self.response.out.write("<h1>%s</h1>" % t.group(1))
+
+        def makejumplist(c, t, bname, gid):
+            s = []
+            i = 1
+            while i <= t:
+                if i == c:
+                    s.append(str(i))
+                else:
+                    s.append("<a href='/subject/%s/%s/%d'>%s</a>" % (bname, gid, i, i))
+                i = i + 1
+            return "&nbsp;&nbsp;".join(s)
         boardLink = "<a class='btnCenter' href='/board/%s' style='{width:%dpx}'>%s</a>" % (board, len(board)*8,board.upper())
         if curPage == 1:
             if curPage == totalPage:
-                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft'>Back</a>%s</h1>" % boardLink
+                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink
             else:
                 nextpage = "/subject/" + board + "/" + gid + "/" + "2"
-                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft'>Back</a>%s<a href='%s' class='btnRight'>2</a></h1>" % (boardLink, nextpage)
+                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s<a href='%s' class='btnRight0'>2</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (boardLink, nextpage, makejumplist(curPage, totalPage, board, gid))
 
         else:
             if curPage == totalPage:
                 lastnum = curPage - 1
-                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft'>%d</a>%s</h1>" % (lastnum, boardLink)
+                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>%d</a>%s<a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastnum, boardLink, makejumplist(curPage, totalPage, board, gid))
             else:
                 lastnum = curPage - 1
                 nextnum = curPage + 1
                 lastPage = "/subject/" + board + "/" + gid + "/" + str(lastnum)
                 nextPage = "/subject/" + board + "/" + gid + "/" + str(nextnum)
-                navlink = "<h1 class='nav'><a href='%s' class='btnLeft'>%s</a>%s<a href='%s' class='btnRight'>%s</a></h1>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum))
+                navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>%s</a>%s<a href='%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum), makejumplist(curPage, totalPage, board, gid))
 
         self.response.out.write(navlink)
 
