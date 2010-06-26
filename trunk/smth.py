@@ -63,7 +63,7 @@ class Board(webapp.RequestHandler):
             self.response.headers['Content-Type'] = myContentType
             self.response.out.write(myHeader)
             self.response.out.write("<h1>%s</h1>" % board.upper())
-            navlink = "<h1 class='nav'><a href='%s' class='btnLeft'>Prev</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a></h1>"
+            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft'>Prev</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a></h1>"
             self.response.out.write(navlink)
             self.response.out.write("<ul class='threads'>")
             for g1, g2 in zip(bname_and_id, title_and_author):
@@ -114,7 +114,7 @@ def getContent(bid, id):
 #    if not m:
     content = filterText(convertFromGB2312ToUTF8(result.content))
     au = re.search(r"发信人: (.*?),", content) #search author
-    m = re.search(r"站内(.*?)--", content, (re.MULTILINE | re.DOTALL))  #search StationIn
+    m = re.search(r", 站内(.*?)--", content, (re.MULTILINE | re.DOTALL))  #search StationIn #fix zhannei in nickname
     if m:
         s = re.sub(r"^(\\n)+", "", m.group(1).strip())
         s = re.sub(r"(\\n)+", "<br />", s)
