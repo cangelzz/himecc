@@ -21,6 +21,10 @@ h1 {
     color: #6699FF;
 }
 
+.boardinth {
+    color: darkcyan;
+}
+
 .threads {
     font-size: 14px;
 }
