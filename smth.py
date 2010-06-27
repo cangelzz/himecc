@@ -131,13 +131,7 @@ def filterText(s):
 
 def getContent(bid, id, single=None, page=""):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s%s' % (bid, id, page))
-
     result = fetch(url)
-    if result.final_url != None:
-        result = fetch("http://www.newsmth.net/" + result.final_url)
-
-#    m = re.search(r"站内(.*?)", content, (re.MULTILINE | re.DOTALL))
-#    if not m:
     content = filterText(convertFromGB2312ToUTF8(result.content))
     if single:
         title = re.search(r"标  题: (.*?)\\n", content).group(1)
