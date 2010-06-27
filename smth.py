@@ -6,8 +6,9 @@
 from google.appengine.ext import webapp 
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import urlfetch
-from google.appengine.api.urlfetch import fetch
+#from google.appengine.api.urlfetch import fetch
 from google.appengine.api import images
+from random import random
 import re 
 from define import id2board, board2id, favor, favor2chs
 
@@ -18,6 +19,9 @@ myHeader = """<html><head>
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
 </head><body>"""
 myFooter = """</body></html>"""
+
+def fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=10):
+    return urlfetch.fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=deadline)
 
 def convertFromGB2312ToUTF8(onestr):
     newstr = onestr
@@ -63,7 +67,7 @@ class Board(webapp.RequestHandler):
             self.response.headers['Content-Type'] = myContentType
             self.response.out.write(myHeader)
             self.response.out.write("<h1>%s</h1>" % board.upper())
-            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a></h1>"
+            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a></h1>"
             self.response.out.write(navlink)
             self.response.out.write("<ul class='threads'>")
             for g1, g2 in zip(bname_and_id, title_and_author):
@@ -85,9 +89,9 @@ class Board(webapp.RequestHandler):
         self.response.out.write(myHeader)
         self.response.out.write("<h1>%s</h1>" % board.upper())
         if (isLast):
-            navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a></h1>" % lastPage
+            navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a></h1>" % lastPage
         else:
-            navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/smth/' style='{width:66px}'>Home</a><a href='%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, nextPage)
+            navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a><a href='%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, nextPage)
 
         self.response.out.write(navlink)
         self.response.out.write("<ul class='threads'>")
@@ -114,17 +118,20 @@ def getContent(bid, id):
 #    if not m:
     content = filterText(convertFromGB2312ToUTF8(result.content))
     au = re.search(r"发信人: (.*?),", content) #search author
-    m = re.search(r", 站内(.*?)--", content, (re.MULTILINE | re.DOTALL))  #search StationIn #fix zhannei in nickname
+    m = re.search(r", 站内(.*?)(\\n)+--", content, (re.MULTILINE | re.DOTALL))  #search StationIn #fix zhannei in nickname
     if m:
-        s = re.sub(r"^(\\n)+", "", m.group(1).strip())
-        s = re.sub(r"(\\n)+", "<br />", s)
-#        s = m.group(1).replace(r"\n", "<br />")
+#        s = re.sub(r"^(\\n)+", "", m.group(1).strip("\\n "))
+        s = re.sub(r"(\\n)+", "<br/>", m.group(1).strip("\\n "))
+#        s = m.group(1).replace(r"\n", "<br/>")
         inx = s.find("【")
-        if inx:
-            st = s[inx:].replace(">>", ">")
-            refergroup = st.split("<br />")
-            st = len(refergroup) > 3 and "<br />".join(refergroup[:3]) or st
-            s = s[:inx] + "<span style='color:grey'>" + st + "</span>"
+        if inx > 0:
+            st = s[inx:]
+            refergroup = st.split("<br/>")
+            st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
+            #add expand comment
+            random_id = str(random())[2:]
+            s = s[:inx].replace("<br/>", "") + "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'>" + "<br/>" + st + "</span></a>"
+            #s = s[:inx] + "<span style='color:grey;'>" + st + "</span>"
         
         atts = re.findall("attach\('(.*?)',\s(\d+),\s(\d+)\);", content)
         for att in atts:
@@ -135,14 +142,15 @@ def getContent(bid, id):
                 att_url = "http://att.newsmth.net/att.php?n.%s.%s.%s" % (bid, id, att[2]) + ext
                 bindata = fetch(url=att_url, method=urlfetch.GET, deadline=10).content
                 img = images.Image(bindata)
-                img.resize(300)
+                if img.width > 300:
+                    img.resize(300)
                 resizedata = img.execute_transforms(images.JPEG)
                 import base64
                 base64data = base64.encodestring(resizedata)
-                s = s + "<br /><img src=\"data:image/jpeg;base64," + base64data + "\">"
+                s = s + "<br/><img src=\"data:image/jpeg;base64," + base64data + "\">"
 
 
-    return "<span class='author'>" + au.group(1) + "</span>: " + s #m.group(1)
+    return "<span class='author'>" + au.group(1) + "</span>: " + "<span style='margin:0px;padding:0px;'>" + s+ "</span>" #m.group(1)
 
 def getContentHeji(bid, id):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s' % (bid, id))
@@ -150,20 +158,24 @@ def getContentHeji(bid, id):
     content = filterText(convertFromGB2312ToUTF8(result.content))
     m = re.search(r"站内(.*)o.h\(0\)", content, (re.MULTILINE | re.DOTALL))
     if m:
-        s = re.sub(r"^(\\n)+", "", m.group(1).strip())
-        s = re.sub(r"(\\n)+", "<br />", s)
-        s = re.sub("<br />   ", "", s)
+#        s = re.sub(r"^(\\n)+", "", m.group(1).strip())
+        s = re.sub(r"(\\n)+", "<br/>", m.group(1).strip("\\n "))
+        #s = re.sub(r"(\\n)+", "<br/>", s)
+        s = re.sub("<br/>\s+", "", s)
         hl = "☆─────────────────────────────────────☆"
         ps = s.split(hl)[1:]
         result = []
         for p in ps:
-            inx = p.find("\xe3\x80\x90")
-            if inx:
-                st = p[inx:].replace(">>", ">")
-                refergroup = st.split("<br />")
-                st = len(refergroup) > 3 and "<br />".join(refergroup[:3]) or st
-                p = p[:inx] + "<span style='color:grey'>" + st + "</span>"
-            result.append(re.sub("(^[\w\d]+.*?\)).*?提到:<br />", r"<span class='author'>\1</span>: ",p))
+            inx = p.find("【")
+            if inx > 0:
+                st = p[inx:]#.replace(">>", ">")
+                refergroup = st.split("<br/>")
+                st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
+                #p = p[:inx] + "<span style='color:grey'>" + st + "</span>"
+                random_id = str(random())[2:]
+                p = p[:inx].replace("<br/>", "") + "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'>" + "<br/>" + st + "</span></a>"
+
+            result.append(re.sub("(^[\w\d]+.*?\)).*?提到:", r"<span class='author'>\1</span>: ",p))
         #s = "<li>" + "</li><li>".join(s.split(hl)[1:]) + "</li>"
         #return s
         return "<li>" + "</li><li>".join(result) + "</li>"
@@ -203,20 +215,23 @@ class Subject(webapp.RequestHandler):
         if curPage == 1:
             if curPage == totalPage:
                 navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink
+                navlink_bottom = navlink
             else:
                 nextpage = "/subject/" + board + "/" + gid + "/" + "2"
                 navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s<a href='%s' class='btnRight0'>2</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (boardLink, nextpage, makejumplist(curPage, totalPage, board, gid))
-
+                navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s<a href='%s' class='btnRight0'>2</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), boardLink, nextpage)
         else:
             if curPage == totalPage:
                 lastnum = curPage - 1
                 navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>%d</a>%s<a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastnum, boardLink, makejumplist(curPage, totalPage, board, gid))
+                navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>%d</a>%s<a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastnum, boardLink)
             else:
                 lastnum = curPage - 1
                 nextnum = curPage + 1
                 lastPage = "/subject/" + board + "/" + gid + "/" + str(lastnum)
                 nextPage = "/subject/" + board + "/" + gid + "/" + str(nextnum)
                 navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>%s</a>%s<a href='%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum), makejumplist(curPage, totalPage, board, gid))
+                navlink = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='%s' class='btnLeft0'>%s</a>%s<a href='%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastPage, str(lastnum), boardLink, nextPage, str(nextnum))
 
         self.response.out.write(navlink)
 
@@ -234,7 +249,7 @@ class Subject(webapp.RequestHandler):
             page += "<li>%s</li>" % result
         page += "</ul>"
         self.response.out.write(page)
-        self.response.out.write(navlink)
+        self.response.out.write(navlink_bottom)
         self.response.out.write(myFooter)
 
 
