@@ -37,24 +37,26 @@ class MainPage(webapp.RequestHandler):
         self.response.headers['Content-Type'] = myContentType
         self.response.out.write(myHeader)
         self.response.out.write("<h1>Newsmth</h1>")
-        self.response.out.write("""<h1 class="navjump"><input id='boardtogo' type="text" /><a onclick="this.href='/board/'+document.getElementById('boardtogo').value" class='btnRight0'>Go</a></h1>""")
+        self.response.out.write("""<h1 class="navjump"><input id='boardtogo' type="text" /><a onclick="this.href='/board/6'+document.getElementById('boardtogo').value" class='btnRight0'>Go</a></h1>""")
         self.response.out.write('<ul class="boards">')
         for b in favor:
-            self.response.out.write("<li><a href='/board/%s'><div style='display:inline-block'>%s</div><div style='display:inline-block;float:right'>%s</div></a></li>" % (b, b.upper(), favor2chs[b]))
+            self.response.out.write("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div><div style='display:inline-block;float:right'>%s</div></a></li>" % (b, b.upper(), favor2chs[b]))
         self.response.out.write("</ul>")
         self.response.out.write(myFooter)
 
 
 class Board(webapp.RequestHandler):
     def get(self):
+        #  2     3    4
+        # /board/type/page
         paras = self.request.path.split('/')
         board = paras[2]
-        if (len(paras) == 3):
+        if (len(paras) == 4):
             isLast = True
             pagetogo = ""
         else:
             isLast = False
-            pagetogo = "&page=" + paras[3]
+            pagetogo = "&page=" + paras[4]
 
         if board == "top10":
             url = "http://www.newsmth.net/rssi.php?h=1"
@@ -77,26 +79,42 @@ class Board(webapp.RequestHandler):
             self.response.out.write(myFooter)
             return
 
-        url = (('http://www.newsmth.net/bbsdoc.php?board=' + board) + '&ftype=6' + pagetogo)
+        if paras[3] == "0":
+            ftype = ""
+            boardlink = "<a class='btnCenter' href='/board/%s/6'>Subject</a>" % board
+        else:
+            ftype =  "&ftype=" + paras[3]
+            boardlink = "<a class='btnCenter' href='/board/%s/0'>Normal</a>" % board
+
+        url = 'http://www.newsmth.net/bbsdoc.php?board=' + board + ftype + pagetogo
+
         result = fetch(url)
         content = convertFromGB2312ToUTF8(result.content)
         posts = re.findall("c\\.o\\((\\d+),(\\d+),'(.*?)','(.*?)',(\\d+),'(.*?)',(\\d+),\\d+,\\d+\\)", content)
-        m = re.search("docWriter.*?\\d+,\\d+,\\d+,\\d+,(\\d+),", content)
-        page = m.group(1)
-        lastPage = "/board/" + board + "/" + str(int(page) - 1)
-        nextPage = isLast and "/board/" + board or "/board/" + board + "/" + str(int(page) + 1)
+        m = re.search("docWriter.*?(\\d+),\\d+,\\d+,\\d+,(\\d+),", content)
+        page = m.group(2)
+        #lastPage = "/board/" + board + "/" + paras[3] + "/" + str(int(page) - 1)
+        #nextPage = isLast and "/board/" + board + paras[3] or "/board/" + board + "/" + paras[3] + "/" + str(int(page) + 1)
+        lastPage = "/".join(["board", board, paras[3], str(int(page)-1)])
+        nextPage = "/".join(isLast and ["board", board, paras[3]] or ["board", board, paras[3], str(int(page) + 1)])
+
         self.response.headers['Content-Type'] = myContentType
         self.response.out.write(myHeader)
         self.response.out.write("<h1>%s</h1>" % board.upper())
+
         if (isLast):
-            navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a></h1>" % lastPage
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a>%s</h1>" % (lastPage, boardlink)
         else:
-            navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a><a href='%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, nextPage)
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a>%s<a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, boardlink, nextPage)
 
         self.response.out.write(navlink)
         self.response.out.write("<ul class='threads'>")
         for p in posts:
-            self.response.out.write(("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (board, p[0], p[5], p[2])))
+            if paras[3] == "0":
+                self.response.out.write(("<li><a href='/post/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (m.group(1), p[0], p[5], p[2])))
+            else:
+                self.response.out.write(("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (board, p[0], p[5], p[2])))
+
         self.response.out.write("</ul>")
         self.response.out.write(navlink)
         self.response.out.write(myFooter)
@@ -111,12 +129,19 @@ def filterText(s):
     return s
     return re.sub("(http://.*?)[^\w\d\s.+-=/_&^%?<]", r"<a href='\1' target='_blank' class='httplink'>|\1|</a>", s)
 
-def getContent(bid, id):
-    url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s' % (bid, id))
+def getContent(bid, id, single=None, page=""):
+    url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s%s' % (bid, id, page))
+
     result = fetch(url)
+    if result.final_url != None:
+        result = fetch("http://www.newsmth.net/" + result.final_url)
+
 #    m = re.search(r"站内(.*?)", content, (re.MULTILINE | re.DOTALL))
 #    if not m:
     content = filterText(convertFromGB2312ToUTF8(result.content))
+    if single:
+        title = re.search(r"标  题: (.*?)\\n", content).group(1)
+        ids = re.search(r"conWriter.*?'([\w\d]+)',\s(\d+),\s(\d+),\s(\d+),\s(\d+)", content).groups()
     au = re.search(r"发信人: (.*?),", content) #search author
     m = re.search(r", 站内(.*?)(\\n)+--", content, (re.MULTILINE | re.DOTALL))  #search StationIn #fix zhannei in nickname
     if m:
@@ -130,7 +155,10 @@ def getContent(bid, id):
             st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
             #add expand comment
             random_id = str(random())[2:]
-            s = s[:inx].replace("<br/>", "") + "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'>" + "<br/>" + st + "</span></a>"
+            if single:
+                s = s[:inx].replace("<br/>", "") + "<span style='color:grey;'><br/>" + st + "</span>"
+            else:
+                s = s[:inx].replace("<br/>", "") +  "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'><br/>" + st + "</span></a>"
             #s = s[:inx] + "<span style='color:grey;'>" + st + "</span>"
         
         atts = re.findall("attach\('(.*?)',\s(\d+),\s(\d+)\);", content)
@@ -149,8 +177,10 @@ def getContent(bid, id):
                 base64data = base64.encodestring(resizedata)
                 s = s + "<br/><img src=\"data:image/jpeg;base64," + base64data + "\">"
 
-
-    return "<span class='author'>" + au.group(1) + "</span>: " + "<span style='margin:0px;padding:0px;'>" + s+ "</span>" #m.group(1)
+    if single:
+        return list(ids) + [title, "<span class='author'>" + au.group(1) + "</span>: " + "<span style='margin:0px;padding:0px;'>" + s+ "</span>"]
+    else:
+        return "<span class='author'>" + au.group(1) + "</span>: " + "<span style='margin:0px;padding:0px;'>" + s+ "</span>" #m.group(1)
 
 def getContentHeji(bid, id):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s' % (bid, id))
@@ -211,15 +241,15 @@ class Subject(webapp.RequestHandler):
                     s.append("<a href='/subject/%s/%s/%d'>%s</a>" % (bname, gid, i, i))
                 i = i + 1
             return "&nbsp;&nbsp;".join(s)
-        boardLink = "<a class='btnCenter' href='/board/%s' style='{width:%dpx}'>%s</a>" % (board, len(board)*8,board.upper())
+        boardLink = "<a class='btnCenter' href='/board/%s/6' style='{width:%dpx}'>%s</a>" % (board, len(board)*8,board.upper())
         if curPage == 1:
             if curPage == totalPage:
                 navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink
                 navlink_bottom = navlink
             else:
-                nextpage = "/subject/" + board + "/" + gid + "/" + "2"
-                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s<a href='%s' class='btnRight0'>2</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (boardLink, nextpage, makejumplist(curPage, totalPage, board, gid))
-                navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s<a href='%s' class='btnRight0'>2</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), boardLink, nextpage)
+                nextPage = "/".join(["subject", board, gid, "2"])
+                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s<a href='/%s' class='btnRight0'>2</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (boardLink, nextPage, makejumplist(curPage, totalPage, board, gid))
+                navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s<a href='/%s' class='btnRight0'>2</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), boardLink, nextPage)
         else:
             if curPage == totalPage:
                 lastnum = curPage - 1
@@ -228,10 +258,10 @@ class Subject(webapp.RequestHandler):
             else:
                 lastnum = curPage - 1
                 nextnum = curPage + 1
-                lastPage = "/subject/" + board + "/" + gid + "/" + str(lastnum)
-                nextPage = "/subject/" + board + "/" + gid + "/" + str(nextnum)
-                navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>%s</a>%s<a href='%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum), makejumplist(curPage, totalPage, board, gid))
-                navlink = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='%s' class='btnLeft0'>%s</a>%s<a href='%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastPage, str(lastnum), boardLink, nextPage, str(nextnum))
+                lastPage = "/".join(["subject", board, gid, str(lastnum)])
+                nextPage = "/".join(["subject", board, gid, str(nextnum)])
+                navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>%s</a>%s<a href='/%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum), makejumplist(curPage, totalPage, board, gid))
+                navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='/%s' class='btnLeft0'>%s</a>%s<a href='/%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastPage, str(lastnum), boardLink, nextPage, str(nextnum))
 
         self.response.out.write(navlink)
 
@@ -257,10 +287,24 @@ class Post(webapp.RequestHandler):
     def get(self):
         paras = self.request.path.split('/')
         bid,id = paras[2],paras[3]
+        if len(paras) == 5:
+            page = "&p=" + paras[4]
+        else:
+            page = ""
+
         self.response.headers['Content-Type'] = myContentType
-        content = getContent(bid, id)
+        board, bid, id, gid, reid, title, content = getContent(bid, id, "single", page)
+        lastSubPost = "/".join(["post", bid, id, "tp"])
+        nextSubPost = "/".join(["post", bid, id, "tn"])
+        firstPost = "/".join(["post", bid, gid])
+        expandPost = "/".join(["subject", board, gid])
+        boardlink = "/".join(["board", board, "0"])
+        navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenterLeft'>1</a><a href='/%s' class='btnCenterLeft'>+</a><a href='/%s' class='btnCenter'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
+
         self.response.out.write(myHeader)
-        self.response.out.write(content)
+        self.response.out.write("<h1>%s</h1>" % title)
+        self.response.out.write(navlink)
+        self.response.out.write("<ul class='posts'><li>" + content + "</li></ul>")
         self.response.out.write(myFooter)
 
 
@@ -269,6 +313,7 @@ class Test(webapp.RequestHandler):
         url = "http://www.newsmth.net/rssi.php?h=1"
         result = fetch(url)
         content = convertFromGB2312ToUTF8(result.content)
+        #navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>%s</a>%s<a href='%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum), makejumplist(curPage, totalPage, board, gid))
         self.response.out.write(myHeader)
         self.response.out.write(content)
 

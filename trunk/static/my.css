@@ -1,4 +1,5 @@
 body {
+    font-family: helvetica;
 	margin: 0;
 	padding: 0;
 	background: #ebebeb url(../images/bg_pattern.png);
@@ -371,6 +372,44 @@ li.data_prog {
 {	
 
 	
+   /* Set a button to be a block so its height and width can be adjusted */
+	display: inline-block;		    
+	
+	height: 30px;
+	
+	/* Use the highest button height to ensure that text will vertically align on all buttons */
+	line-height: 28px;	 
+	
+	/* A button will expand to the width of its parent cell if no width is specified */
+/*	width: 70px;			*/
+	
+	font-size: 14px;
+	font-weight: bold;
+	font-family: Helvetica;
+	color: #3c491a;
+	
+	text-decoration: none;
+	text-align: center;
+	
+		
+	padding: 0;
+    padding-right: 5px;
+	margin: 0;
+
+    text-shadow: #f5f4d7 0px 1px 1px;
+	border-width: 0px 5px 0px 12px;   
+	
+	
+	/* -webkit-border-image divides the leftButton image into 2 corners and middle part.	*/
+	/* The left corner is 12 pixels wide. The right corner is 5 pixels wide and the middle part is 1 pixel. */
+	-webkit-border-image: url(btn_center.png) 0 5 0 12;		
+
+}
+
+.btnCenterLeft
+{	
+
+	float: left;
    /* Set a button to be a block so its height and width can be adjusted */
 	display: inline-block;		    
 	
