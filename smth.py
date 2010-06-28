@@ -21,7 +21,7 @@ myHeader = """<html><head>
 myFooter = """</body></html>"""
 
 def fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=10):
-    return urlfetch.fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=deadline)
+    return urlfetch.fetch(url, payload=payload, method=method, headers=headers, allow_truncated=allow_truncated, follow_redirects=follow_redirects, deadline=deadline)
 
 def convertFromGB2312ToUTF8(onestr):
     newstr = onestr
@@ -311,7 +311,30 @@ class Test(webapp.RequestHandler):
         self.response.out.write(myHeader)
         self.response.out.write(content)
 
+from google.appengine.api import users
 
+class Login(webapp.RequestHandler):
+    def get(self):
+        import logging
+    	paras = self.request.path.split('/')
+    	userid, passwd = paras[2], paras[3]
+    	logging.log(logging.INFO, userid+passwd)
+        user = users.get_current_user()
+        if user:
+            greeting = ("Welcome, %s! (<a href=\"%s\">sign out</a>)" %
+                        (user.nickname(), users.create_logout_url("/")))
+        else:
+			url = "http://www.newsmth.net/bbslogin2.php"
+			formdata = {"id": userid, "passwd": passwd}
+			import urllib
+			result = fetch(url, method=urlfetch.POST, payload=urllib.urlencode(formdata), follow_redirects=False)
+
+			logging.log(logging.INFO, result.status_code)
+			greeting = convertFromGB2312ToUTF8(result.content)
+			logging.log(logging.INFO, result.status_code)
+
+
+        self.response.out.write("<html><body>%s</body></html>" % greeting)
 
 application = webapp.WSGIApplication([('/',  MainPage),
                                       ('/smth/.*',  MainPage),
@@ -319,6 +342,7 @@ application = webapp.WSGIApplication([('/',  MainPage),
                                       ('/subject/.*', Subject),
                                       ('/post/.*', Post),
                                       ('/test/.*', Test),
+                                      ('/login/.*', Login),
                                       ], debug=True)
 
 def main():
