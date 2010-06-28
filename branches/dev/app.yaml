@@ -1,11 +1,14 @@
 application: hime
-version: 1
+version: 2
 runtime: python
 api_version: 1
 
 handlers:
 
 - url: /
+  script: smth.py
+
+- url: /login/.*
   script: smth.py
 
 - url: /static
