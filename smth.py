@@ -321,18 +321,30 @@ ipadHeader = """<html><head>
     $('#divThreads').load('/');
     $('#divPosts').load('/board/apple/6');
   }
+
+  function loadBoard(board)
+  {
+    $('#divThreads').load('/board/' + board + '/6')
+  }
 </script>
 </head><body onload="init()">"""
 
+def makenav():
+    s = []
+    for b in favor:
+        s.append("<div class='hBoard'><a href=\"javascript:loadBoard('%s')\">%s</a></div>" % (b, b.capitalize()))
+    return "|".join(s)
+    #return " ".join(favor)
+
 ipadBody = """
-<div id="navboard"></div>
+<div id="navboard"><p>%s</p></div>
 <div id="main">
 
   <div id="divThreads"></div>
   <div id="divPosts"></div>
 
 </div>
-"""
+""" % makenav()
 
 
 class iPad(webapp.RequestHandler):
