@@ -6,11 +6,6 @@ body {
 	-webkit-text-size-adjust:none;		  /* Turn off font resizing */
 }
 
-#navboard {background: #C2CFF1}
-#main {width:100%;position:absolute;}
-#divThreads {float:left;width:260px}
-#divPosts {margin-left:260px;border-left:solid 1px #c2cff1}
-
 h1 {
     font-family: Verdana;
     font-size: 20px;
@@ -505,3 +500,9 @@ li.data_prog {
     text-align: center;
     display: none;
 }
+
+#navboard {width:100%;background: #C2CFF1;}
+#main {width:100%;position:absolute;}
+#divThreads {float:left;width:260px}
+#divPosts {margin-left:260px;border-left:solid 1px #c2cff1}
+.hBoard {display:inline-block;margin:5px}
