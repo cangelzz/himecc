@@ -11,6 +11,9 @@ handlers:
 - url: /static
   static_dir: static
 
+- url: /ipad/.*
+  script: smth.py
+
 - url: /smth/.*
   script: smth.py
 

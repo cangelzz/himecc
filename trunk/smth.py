@@ -311,6 +311,38 @@ class Test(webapp.RequestHandler):
         self.response.out.write(myHeader)
         self.response.out.write(content)
 
+ipadHeader = """<html><head>
+<link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
+<script src="/static/jquery.js"></script>
+<script type="text/javascript">
+  function init() {
+    $('#divThreads').load('/');
+    $('#divPosts').load('/board/apple/6');
+  }
+</script>
+</head><body onload="init()">"""
+
+ipadBody = """
+<div id="navboard"></div>
+<div id="main">
+
+  <div id="divThreads"></div>
+  <div id="divPosts"></div>
+
+</div>
+"""
+
+
+class iPad(webapp.RequestHandler):
+    def get(self):
+        self.response.headers['Content-Type'] = myContentType
+        self.response.out.write(ipadHeader)
+        self.response.out.write(ipadBody)
+
+
+        self.response.out.write(myFooter)
 
 
 application = webapp.WSGIApplication([('/',  MainPage),
@@ -319,6 +351,7 @@ application = webapp.WSGIApplication([('/',  MainPage),
                                       ('/subject/.*', Subject),
                                       ('/post/.*', Post),
                                       ('/test/.*', Test),
+                                      ('/ipad/.*', iPad),
                                       ], debug=True)
 
 def main():
