@@ -6,6 +6,10 @@ body {
 	-webkit-text-size-adjust:none;		  /* Turn off font resizing */
 }
 
+#navboard {background: #C2CFF1}
+#main {width:100%;position:absolute;}
+#divThreads {float:left;width:260px}
+#divPosts {margin-left:260px;border-left:solid 1px #c2cff1}
 
 h1 {
     font-family: Verdana;
@@ -204,111 +208,6 @@ li.data_prog {
 	height: 60px;
 }
 
-#sinopse {
-    padding: 0px;
-    font-family: helvetica;
-    font-weight: normal;
-}
-
-
-#sinopse h3 {
-    font-size: 22px;
-    float: right;
-    margin: 0 0 7px 0;
-    color:#666;
-    font-weight: normal;
-    letter-spacing: -1px;
-    font-weight:bold;
-}
-
-
-#sinopse h4 {
-    display: inline;
-    font-size: 12px;
-    color:#666;
-    font-weight: normal;
-}
-
-#sinopse hr {
-    clear:both;
-    margin: 10px 0;
-    border: 0;
-    border-bottom: 1px solid #ddd;
-}
-
-#sinopse .tit {
-    font-size: 18px;
-    font-weight: bold;
-    display:block;
-}
-
-#sinopse .tit_orig {
-    font-size: 14px;
-    font-style: italic;
-    color: #666;
-    display:block;
-}
-
-#sinopse .small_data {
-    margin-top: 10px;
-    font-size: 12px;
-    color: #666;
-    display:block;
-}
-
-#sinopse .texto {
-    margin: 15px 0;
-    font-size: 14px;
-    color: #000;
-    display:block;
-}
-
-#sinopse .texto2 {
-    margin: 10px 0;
-    font-size: 14px;
-    color: #000;
-    display:block;
-}
-
-/* The button class defines properties for buttons that are either 30px or 46px high  */
-.backbutton	
-{	
-   /* Set a button to be a block so its height and width can be adjusted */
-	display: block;		    
-
-	position: absolute;
-		
-	height: 30px;
-	
-	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 28px;	 
-	
-	/* A button will expand to the width of its parent cell if no width is specified */
-	width: 40px;
-	
-	font-size: 14px;
-	font-weight: bold;
-	font-family: Helvetica;
-	color: #3c491a;
-	letter-spacing: -1px;
-
-	/* Put a 1 pixel blur black shadow below the button's text */
-	text-shadow: #f5f4d7 0px 1px 1px;
-	border-width: 0px 5px 0px 12px;   
-	
-	text-decoration: none;
-	text-align: center;
-	
-	
-	padding: 0;
-	margin: -40px 10px 10px 10px;
-	
-	/* -webkit-border-image divides the leftButton image into 2 corners and middle part.	*/
-	/* The left corner is 12 pixels wide. The right corner is 5 pixels wide and the middle part is 1 pixel. */
-	-webkit-border-image: url(btn_left.png) 0 5 0 12;	
-
-}
-
 
 .button	
 {	
@@ -337,36 +236,6 @@ li.data_prog {
 
 }
 
-
-.button_fr	
-{	
-
-	
-   /* Set a button to be a block so its height and width can be adjusted */
-	display: block;		    
-	
-	height: 30px;
-	
-	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 28px;	 
-	
-	/* A button will expand to the width of its parent cell if no width is specified */
-	width: 50px;			
-	
-	font-size: 14px;
-	font-weight: bold;
-	font-family: Helvetica;
-	color: #3c491a;
-	
-	text-decoration: none;
-	text-align: center;
-	
-	float: right;
-		
-	padding: 0;
-	margin: 0;
-
-}
 
 .btnCenter	
 {	
