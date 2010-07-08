@@ -195,53 +195,6 @@ def _content_html(li, type):
             refer = "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'><br/>" + li[2] + "</span></a>"
         return "<span class='author'>%s</span>: <span style='margin:0px;padding:0px;'>%s" % (li[0], li[1]) + refer + li[3] + "</span>"
 
-def getContent(bid, id, single=None, page=""):
-    url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s%s' % (bid, id, page))
-    result = fetch(url)
-    content = filterText(convertFromGB2312ToUTF8(result.content))
-    if single:
-        title = re.search(r"标  题: (.*?)\\n", content).group(1)
-        ids = re.search(r"conWriter.*?'([\w\d]+)',\s(\d+),\s(\d+),\s(\d+),\s(\d+)", content).groups()
-    au = re.search(r"发信人: (.*?),", content) #search author
-    m = re.search(r", 站内(.*?)(\\n)+--", content, (re.MULTILINE | re.DOTALL))  #search StationIn #fix zhannei in nickname
-    if m:
-#        s = re.sub(r"^(\\n)+", "", m.group(1).strip("\\n "))
-        s = re.sub(r"(\\n)+", "<br/>", m.group(1).strip("\\n "))
-#        s = m.group(1).replace(r"\n", "<br/>")
-        inx = s.find("【")
-        if inx > 0:
-            st = s[inx:]
-            refergroup = st.split("<br/>")
-            st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
-            #add expand comment
-            random_id = str(random())[2:]
-            if single:
-                s = s[:inx].replace("<br/>", "") + "<span style='color:grey;'><br/>" + st + "</span>"
-            else:
-                s = s[:inx].replace("<br/>", "") +  "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'><br/>" + st + "</span></a>"
-            #s = s[:inx] + "<span style='color:grey;'>" + st + "</span>"
-        
-        atts = re.findall("attach\('(.*?)',\s(\d+),\s(\d+)\);", content)
-        for att in atts:
-            fname = att[0]
-            ext = fname[fname.find("."):]
-            extL = ext.lower()
-            if extL == ".jpg" or extL == ".jpeg" or extL == ".bmp" or extL == ".png" or extL == ".gif":
-                att_url = "http://att.newsmth.net/att.php?n.%s.%s.%s" % (bid, id, att[2]) + ext
-                bindata = fetch(url=att_url, method=urlfetch.GET, deadline=10).content
-                img = images.Image(bindata)
-                if img.width > 300:
-                    img.resize(300)
-                resizedata = img.execute_transforms(images.JPEG)
-                import base64
-                base64data = base64.encodestring(resizedata)
-                s = s + "<br/><img src=\"data:image/jpeg;base64," + base64data + "\">"
-
-    if single:
-        return list(ids) + [title, "<span class='author'>" + au.group(1) + "</span>: " + "<span style='margin:0px;padding:0px;'>" + s+ "</span>"]
-    else:
-        return "<span class='author'>" + au.group(1) + "</span>: " + "<span style='margin:0px;padding:0px;'>" + s+ "</span>" #m.group(1)
-
 def getContentHeji(bid, id):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s' % (bid, id))
     result = fetch(url)
@@ -331,7 +284,6 @@ def _subject(path, type=0):
             posts = posts[1:]
 
         for p in posts:
-#            result = getContent(board2id[board.lower()], p[0])
             result = _content_html(_content(board2id[board.lower()], p[0])[6:], 2)
             page += "<li>%s</li>" % result
         page += "</ul>"
@@ -406,6 +358,14 @@ ipadHeader = """<html><head>
   function init() {
 //    $('#divThreads').load('/');
 //    $('#divPosts').load('/iboard/apple/6');
+      $('#progress').ajaxStart(function() {
+        $(this).show();
+       });
+
+      $('#progress').ajaxComplete(function() {
+        $(this).hide();
+       });
+      $("#main").css("height", $(window).height()-$("#navboard").height())
   }
 
   function loadBoard(path)
@@ -422,8 +382,11 @@ ipadHeader = """<html><head>
   {
     $('#divPosts').load(path)
   }
+
+  $(document).ready(init);
+
 </script>
-</head><body onload="init()">"""
+</head><body class="webkit">"""
 
 def makenav():
     s = []
@@ -433,7 +396,8 @@ def makenav():
     #return " ".join(favor)
 
 ipadBody = """
-<div id="navboard"><p>%s</p></div>
+<div id="navboard">%s</div>
+<div id="progress" style="display:none"><span>loading ...</span></div>
 <div id="main">
 
   <div id="divThreads"></div>
