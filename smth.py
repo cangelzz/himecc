@@ -238,7 +238,7 @@ def _subject(path, type=0):
         url = 'http://www.newsmth.net/bbstcon.php?board=%s&gid=%s%s' % (board, gid, pagenum)
 #        self.response.out.write(((board + '  ') + gid))
         result = fetch(url)
-        t = re.search("<title>(.*?)</title>", convertFromGB2312ToUTF8(result.content))
+        t = re.search("<title>.*?-.*?-(.*?)</title>", convertFromGB2312ToUTF8(result.content))
         m = re.search("tconWriter.*?\\d+,\\d+,\\d+,(\\d+),(\\d+),", result.content)
 
         totalPage = int(m.group(1))
@@ -257,7 +257,7 @@ def _subject(path, type=0):
         boardLink = "<a class='btnCenter' href='/board/%s/6' style='{width:%dpx}'>%s</a>" % (board, len(board)*8,board.upper())
         if curPage == 1:
             if curPage == totalPage:
-                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink
+                navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink
                 navlink_bottom = navlink
             else:
                 nextPage = "/".join(["subject", board, gid, "2"])
@@ -277,6 +277,7 @@ def _subject(path, type=0):
                 navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='/%s' class='btnLeft0'>%s</a>%s<a href='/%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastPage, str(lastnum), boardLink, nextPage, str(nextnum))
 
         navlink =  "<h1>%s</h1>" % t.group(1) + navlink
+        navlink_bottom = navlink_bottom.replace("snavtop", "snavbottom")
 
         posts = re.findall('''\[(\d+),'(.*?)'\]''', result.content)
         page = "<ul class='posts'>"
