@@ -69,14 +69,18 @@ def _board(path, type=0):
             bname_and_id = re.findall("<link>.*?(?<=board=)(\w+).*?gid=(\d+)", content)
             title_and_author =  re.findall("<description>.*?:\s(.*?),.*?<br/>.*?:\s(.*?)<br/>",content)
 
-            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a></h1>"
+            if type == 1:
+                navlink = "<h1 class='nav'>TOP10</h1>"
+            else:
+                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a></h1>"
+
             navlink_top = head + navlink
 
             page = ["<ul class='threads'>"]
             for g1, g2 in zip(bname_and_id, title_and_author):
-                if type == 1:
-                    page.append("<li><a href=\"javascript:loadSubject('/isubject/%s/%s')\">%s&nbsp;&nbsp;<span class='author'>%s</span> <span class='boardinth'>[%s]</span></a></li>" % (g1[0], g1[1], g2[1], g2[0], g1[0]))
-                else:
+#                if type == 1:
+#                    page.append("<li><a href=\"javascript:loadSmart('/isubject/%s/%s')\">%s&nbsp;&nbsp;<span class='author'>%s</span> <span class='boardinth'>[%s]</span></a></li>" % (g1[0], g1[1], g2[1], g2[0], g1[0]))
+#                else:
                     page.append("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span> <span class='boardinth'>[%s]</span></a></li>" % (g1[0], g1[1], g2[1], g2[0], g1[0]))
             page.append("</ul>")
 
@@ -109,14 +113,14 @@ def _board(path, type=0):
         page = ["<ul class='threads'>"]
         for p in posts:
             if paras[3] == 0:
-                if type == 1:
-                    page.append(("<li><a href=\"javascript:loadPost('/ipost/%s/%s')\">%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (m.group(1), p[0], p[5], p[2])))
-                else:
+#                if type == 1:
+#                    page.append(("<li><a href=\"javascript:loadPost('/ipost/%s/%s')\">%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (m.group(1), p[0], p[5], p[2])))
+#                else:
                     page.append(("<li><a href='/post/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (m.group(1), p[0], p[5], p[2])))
             else:
-                if type == 1:
-                    page.append(("<li><a href=\"javascript:loadSubject('/isubject/%s/%s')\">%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (board, p[0], p[5], p[2])))
-                else:
+#                if type == 1:
+#                    page.append(("<li><a href=\"javascript:loadSubject('/isubject/%s/%s')\">%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (board, p[0], p[5], p[2])))
+#                else:
                     page.append(("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (board, p[0], p[5], p[2])))
 
         page.append("</ul>")
@@ -354,38 +358,7 @@ ipadHeader = """<html><head>
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
 <script src="/static/jquery.js"></script>
-<script type="text/javascript">
-  function init() {
-//    $('#divThreads').load('/');
-//    $('#divPosts').load('/iboard/apple/6');
-      $('#progress').ajaxStart(function() {
-        $(this).show();
-       });
-
-      $('#progress').ajaxComplete(function() {
-        $(this).hide();
-       });
-      $("#main").css("height", $(window).height()-$("#navboard").height())
-  }
-
-  function loadBoard(path)
-  {
-    $('#divThreads').load(path)
-  }
-
-  function loadSubject(path)
-  {
-    $('#divPosts').load(path)
-  }
-
-  function loadPost(path)
-  {
-    $('#divPosts').load(path)
-  }
-
-  $(document).ready(init);
-
-</script>
+<script src="/static/ipad.js"></script>
 </head><body class="webkit">"""
 
 def makenav():
