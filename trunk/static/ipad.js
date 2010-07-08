@@ -7,6 +7,7 @@ $(document).ready(function(){
         $(this).hide();
         $("a").each(function(){
             var url = this.href;
+            if (this.pathname == "/") $(this).remove();
             if (url.match(/history.go/)) $(this).remove();
             if (url.match(/javascript/)) return;
             if (url.match(/(board|subject|post)/))
@@ -19,6 +20,7 @@ $(document).ready(function(){
     });
 
     $("#main").css("height", $(window).height()-$("#navboard").height());
+    if (navigator.userAgent.match(/Chrome/i)) return;
     $("#divThreads").jScrollTouch();
     $("#divPosts").jScrollTouch();
 });
