@@ -501,8 +501,54 @@ li.data_prog {
     display: none;
 }
 
-#navboard {width:100%;background: #C2CFF1;}
-#main {width:100%;position:absolute;}
-#divThreads {float:left;width:260px}
-#divPosts {margin-left:260px;border-left:solid 1px #c2cff1}
-.hBoard {display:inline-block;margin:5px}
+body, html {overflow:hidden;}
+.webkit{overflow:visible}
+
+#navboard {
+    width:100%;
+    background: #C2CFF1;
+}
+#main {
+    width:100%;
+    position:absolute;
+    border-bottom: solid 1px #c2cff1;
+}
+
+#divThreads {
+    float:left;
+    width:40%;
+    height:100%;
+    overflow:auto;
+}
+#divPosts {
+    height:100%;
+    border-left:solid 1px #c2cff1;
+    border-right:solid 1px #c2cff1;
+    overflow:auto;
+}
+.hBoard {
+    display:inline-block;
+    margin:5px;
+}
+
+#progress {
+    font-family: helvetica;
+    position:absolute;
+    top:0;
+    z-index:100;
+    color: black;
+    text-align: center;
+    left: 50%;
+    top: 50%;
+    margin: -100px 0px 0px -300px;
+}
+
+#progress > * {
+    background: #C0C0C0 url(progress.gif) center 75% no-repeat;
+    -webkit-border-radius:25px;
+    opacity:.8;
+    position: absolute;
+    padding-top: 100px;
+    width: 600px;
+    height: 100px;
+}
