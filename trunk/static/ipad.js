@@ -10,7 +10,7 @@ $(document).ready(function(){
             if (url.match(/javascript/)) return;
             if (url.match(/(board|subject|post)/))
             {
-                url = url.replace("board", "iboard").replace("subject","isubject","post","ipost");
+                url = url.replace("board", "iboard").replace("subject","isubject").replace("post","ipost");
                 this.href = "javascript:loadSmart('" + url + "')";
             }
         });
