@@ -6,15 +6,19 @@ body {
 	-webkit-text-size-adjust:none;		  /* Turn off font resizing */
 }
 
+html {margin:0}
+
+div {margin:0;}
+
 h1 {
     font-family: Verdana;
     font-size: 20px;
     color: white;
 	text-align: center;
 	margin:0;
-	padding: 6px;
+	padding: 3px;
 /*	height: 32px; */
-	background: #32598b
+	background: #32598b;
 }
 
 .author {
@@ -45,6 +49,7 @@ div.floatright
 .nav{
     background: #b2d281;
     text-align: center;
+    min-height:25px;
    /* height: 32px; */
 }
 
@@ -204,10 +209,10 @@ li.data_prog {
    /* Set a button to be a block so its height and width can be adjusted */
 	display: inline-block;		    
 	
-	height: 30px;
+	height: 25px;
 	
 	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 28px;	 
+	line-height: 24px;	 
 	
 	/* A button will expand to the width of its parent cell if no width is specified */
 /*	width: 70px;			*/
@@ -242,7 +247,7 @@ li.data_prog {
    /* Set a button to be a block so its height and width can be adjusted */
 	display: inline-block;		    
 	
-	height: 30px;
+	height: 25px;
 	
 	/* Use the highest button height to ensure that text will vertically align on all buttons */
 	line-height: 28px;	 
@@ -281,7 +286,7 @@ li.data_prog {
 
     display: inline-block;
 	
-	height: 30px;
+	height: 25px;
 	
 	/* Use the highest button height to ensure that text will vertically align on all buttons */
 	line-height: 28px;
@@ -322,7 +327,7 @@ li.data_prog {
 
     display: inline-block;
 	
-	height: 30px;
+	height: 25px;
 	
 	/* Use the highest button height to ensure that text will vertically align on all buttons */
 	line-height: 28px;
@@ -356,7 +361,7 @@ li.data_prog {
 	text-align: center;
     display: inline-block;
 	
-	height: 30px;
+	height: 25px;
 	
 	/* Use the highest button height to ensure that text will vertically align on all buttons */
 	line-height: 28px;
@@ -393,7 +398,7 @@ li.data_prog {
 	text-align: center;
     display: inline-block;
 	
-	height: 30px;
+	height: 25px;
 	
 	/* Use the highest button height to ensure that text will vertically align on all buttons */
 	line-height: 28px;
@@ -432,7 +437,7 @@ li.data_prog {
   	text-decoration: none;
     display: inline-block;
 	
-	height: 30px;
+	height: 25px;
 	
 	/* Use the highest button height to ensure that text will vertically align on all buttons */
 	line-height: 28px;			
@@ -466,7 +471,6 @@ li.data_prog {
     display: none;
 }
 
-body, html {overflow:hidden;}
 .webkit{overflow:visible}
 
 #navboard {

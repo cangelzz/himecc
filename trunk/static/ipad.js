@@ -5,6 +5,9 @@ $(document).ready(function(){
 
     $('#progress').ajaxComplete(function() {
         $(this).hide();
+
+        $("div#divPosts h1 a.btnCenter").remove();
+
         $("a").each(function(){
             var url = this.href;
             if (this.pathname == "/") $(this).remove();
@@ -16,10 +19,16 @@ $(document).ready(function(){
                 this.href = "javascript:loadSmart('" + url + "')";
             }
         });
-     
+
+        if ($('#snavbottom').length > 0)
+            if ($('#snavbottom').position().top < $('#divPosts').height()) {
+                $('#snavbottom').remove();
+                $('#snavtop').remove();
+            }
+    
     });
 
-    $("#main").css("height", $(window).height()-$("#navboard").height());
+    $("#main").css("height", $(window).height()-$("#navboard").height()-1);
     if (navigator.userAgent.match(/Chrome/i)) return;
     $("#divThreads").jScrollTouch();
     $("#divPosts").jScrollTouch();
@@ -34,17 +43,17 @@ function loadSmart(path) {
 
 function loadBoard(path)
 {
-    $('#divThreads').load(path)
+    $('#divThreads').load(path);
 }
 
 function loadSubject(path)
 {
-    $('#divPosts').load(path)
+    $('#divPosts').load(path);
 }
 
 function loadPost(path)
 {
-    $('#divPosts').load(path)
+    $('#divPosts').load(path);
 }
 
 
