@@ -112,7 +112,7 @@ def _board(path, type=0):
         navlink_top = head + navlink
         page = ["<ul class='threads'>"]
         for p in posts:
-            if paras[3] == 0:
+            if paras[3] == "0":
 #                if type == 1:
 #                    page.append(("<li><a href=\"javascript:loadPost('/ipost/%s/%s')\">%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (m.group(1), p[0], p[5], p[2])))
 #                else:
@@ -315,22 +315,22 @@ def _post(path, type=0):
         c = _content(bid, id, page)
         board, bid, id, gid, reid, title = c[:6]
 
-        if type == 1:
-            lastSubPost = "/".join(["ipost", bid, id, "tp"])
-            nextSubPost = "/".join(["ipost", bid, id, "tn"])
-            firstPost = "/".join(["ipost", bid, gid])
-            expandPost = "/".join(["isubject", board, gid])
-            boardlink = "/".join(["iboard", board, "0"])
-        else:
-            lastSubPost = "/".join(["post", bid, id, "tp"])
-            nextSubPost = "/".join(["post", bid, id, "tn"])
-            firstPost = "/".join(["post", bid, gid])
-            expandPost = "/".join(["subject", board, gid])
-            boardlink = "/".join(["board", board, "0"])
-        if type == 1: #need modify
-            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenterLeft'>1</a><a href='/%s' class='btnCenterLeft'>+</a><a href='/%s' class='btnCenter'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
-        else:
-            navlink = "<h1>%s</h1><h1 class='nav'><a href=\"javascript:loadPost('/%s')\" class='btnLeft0'>&lt;</a><a href=\"javascript:loadPost('/%s')\" class='btnCenterLeft'>1</a><a href=\"javascript:loadPost('/%s')\" class='btnCenterLeft'>+</a><a href=\"javascript:loadPost('/%s')\" class='btnCenter'>%s</a><a href=\"javascript:loadPost('/%s')\" class='btnRight0'>&gt;</a></h1>" % (title,lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
+#        if type == 1:
+#            lastSubPost = "/".join(["ipost", bid, id, "tp"])
+#            nextSubPost = "/".join(["ipost", bid, id, "tn"])
+#            firstPost = "/".join(["ipost", bid, gid])
+#            expandPost = "/".join(["isubject", board, gid])
+#            boardlink = "/".join(["iboard", board, "0"])
+#        else:
+        lastSubPost = "/".join(["post", bid, id, "tp"])
+        nextSubPost = "/".join(["post", bid, id, "tn"])
+        firstPost = "/".join(["post", bid, gid])
+        expandPost = "/".join(["subject", board, gid])
+        boardlink = "/".join(["board", board, "0"])
+#        if type == 1:
+        navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenterLeft'>1</a><a href='/%s' class='btnCenterLeft'>+</a><a href='/%s' class='btnCenter'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
+#        else:
+#            navlink = "<h1>%s</h1><h1 class='nav'><a href=\"javascript:loadPost('/%s')\" class='btnLeft0'>&lt;</a><a href=\"javascript:loadPost('/%s')\" class='btnCenterLeft'>1</a><a href=\"javascript:loadPost('/%s')\" class='btnCenterLeft'>+</a><a href=\"javascript:loadPost('/%s')\" class='btnCenter'>%s</a><a href=\"javascript:loadPost('/%s')\" class='btnRight0'>&gt;</a></h1>" % (title,lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
 
         return [navlink, "<ul class='posts'><li>" + _content_html(c[6:], 1) + "</li></ul>"]
 
