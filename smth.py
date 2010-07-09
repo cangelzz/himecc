@@ -59,7 +59,7 @@ def _board(path, type=0):
             isLast = False
             pagetogo = "&page=" + paras[4]
 
-        head = "<h1>%s</h1>" % board.upper()
+        head = "<h1 id='boardh1'>%s</h1>" % board.upper()
 
         if board == "top10":
             url = "http://www.newsmth.net/rssi.php?h=1"
@@ -70,7 +70,7 @@ def _board(path, type=0):
             title_and_author =  re.findall("<description>.*?:\s(.*?),.*?<br/>.*?:\s(.*?)<br/>",content)
 
             if type == 1:
-                navlink = "<h1 class='nav'>TOP10</h1>"
+                navlink = ""
             else:
                 navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a></h1>"
 
@@ -366,12 +366,12 @@ ipadHeader = """<html><head>
 def makenav():
     s = []
     for b in favor:
-        s.append("<div class='hBoard'><a href=\"javascript:loadBoard('/iboard/%s/6')\">%s</a></div>" % (b, b.capitalize()))
+        s.append("<a class='hBoard' href=\"javascript:loadBoard('/iboard/%s/6')\">%s</a>" % (b, b.capitalize()))
     return "|".join(s)
     #return " ".join(favor)
 
 ipadBody = """
-<div id="navboard">%s</div>
+<div id="navboard"><div class="navleft"><a href="javascript:nav2left()">&lt;</a></div><div id="navcon">%s</div><div class="navright"><a href="javascript:nav2right()">&gt;</a></div></div>
 <div id="progress" style="display:none"><span>loading ...</span></div>
 <div id="main">
 

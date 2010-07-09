@@ -205,20 +205,11 @@ li.data_prog {
 
 .btnCenter	
 {	
-
-	
-   /* Set a button to be a block so its height and width can be adjusted */
 	display: inline-block;		    
-	
 	height: 25px;
-	
-	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 24px;	 
-	
-	/* A button will expand to the width of its parent cell if no width is specified */
-/*	width: 70px;			*/
-	
-	font-size: 14px;
+	line-height: 25px;	 
+
+    font-size: 14px;
 	font-weight: bold;
 	font-family: Helvetica;
 	color: #3c491a;
@@ -226,19 +217,15 @@ li.data_prog {
 	text-decoration: none;
 	text-align: center;
 	
-		
-	padding: 0;
+    padding: 0;
     padding-right: 5px;
 	margin: 0;
 
     text-shadow: #f5f4d7 0px 1px 1px;
 	border-width: 0px 5px 0px 12px;   
-	
-	
 	/* -webkit-border-image divides the leftButton image into 2 corners and middle part.	*/
 	/* The left corner is 12 pixels wide. The right corner is 5 pixels wide and the middle part is 1 pixel. */
 	-webkit-border-image: url(btn_center.png) 0 5 0 12;		
-
 }
 
 .btnCenterLeft
@@ -249,9 +236,7 @@ li.data_prog {
 	display: inline-block;		    
 	
 	height: 25px;
-	
-	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 28px;	 
+	line-height: 25px;
 	
 	/* A button will expand to the width of its parent cell if no width is specified */
 /*	width: 70px;			*/
@@ -277,46 +262,6 @@ li.data_prog {
 	/* The left corner is 12 pixels wide. The right corner is 5 pixels wide and the middle part is 1 pixel. */
 	-webkit-border-image: url(btn_center.png) 0 5 0 12;		
 
-}
-
-.btnLeft 
-{
-    float: left;
-    text-decoration: none;
-	text-align: center;
-
-    display: inline-block;
-	
-	height: 25px;
-	
-	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 28px;
-	
-	/* A button will expand to the width of its parent cell if no width is specified */
-	width: 50px;			
-	
-	font-size: 14px;
-	font-weight: bold;
-	font-family: Helvetica;
-	color: #3c491a;
-	
-	text-decoration: none;
-	text-align: center;
-	
-	padding: 0;
-	margin: 0;
-
-
-	color: #3c491a;
-	
-	/* Put a 1 pixel blur black shadow below the button's text */
-	text-shadow: #f5f4d7 0px 1px 1px;
-	border-width: 0px 5px 0px 12px;   
-	
-	
-	/* -webkit-border-image divides the leftButton image into 2 corners and middle part.	*/
-	/* The left corner is 12 pixels wide. The right corner is 5 pixels wide and the middle part is 1 pixel. */
-	-webkit-border-image: url(btn_left.png) 0 5 0 12;		
 }
 
 /*  Creates a button using a 18x30 image */
@@ -329,9 +274,7 @@ li.data_prog {
     display: inline-block;
 	
 	height: 25px;
-	
-	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 28px;
+	line-height: 25px;
     min-width: 20px;
 	
 	font-size: 14px;
@@ -363,9 +306,7 @@ li.data_prog {
     display: inline-block;
 	
 	height: 25px;
-	
-	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 28px;
+	line-height: 25px;
     min-width: 20px;
 
 	font-size: 14px;
@@ -375,51 +316,6 @@ li.data_prog {
 	
 	padding: 0;
 	margin: 0;
-
-
-	color: #3c491a;
-
-	border-width: 0px 12px 0px 5px;
-
-	text-shadow: #f5f4d7 0px 1px 1px;
-	letter-spacing: -1px;
-	
-	/* -webkit-border-image divides the rightButton image into three parts. */
-	/* The right and left corners of the image are respectively 12 pixels and 5 pixels wide. */
-	/* This leaves 1 pixel for the midlle part of the image.		*/
-	-webkit-border-image: url(btn_right.png) 0 12 0 5;
-}
-
-
-/* Creates a button using a 18x30 image */
-.btnRight	 
-{
-    float: right;
-  	text-decoration: none;
-	text-align: center;
-    display: inline-block;
-	
-	height: 25px;
-	
-	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 28px;
-	
-	/* A button will expand to the width of its parent cell if no width is specified */
-	width: 50px;			
-	
-	font-size: 14px;
-	font-weight: bold;
-	font-family: Helvetica;
-	color: #3c491a;
-	
-	text-decoration: none;
-	text-align: center;
-	
-	padding: 0;
-	margin: 0;
-
-
-	color: #3c491a;
 
 	border-width: 0px 12px 0px 5px;
 
@@ -439,9 +335,7 @@ li.data_prog {
     display: inline-block;
 	
 	height: 25px;
-	
-	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 28px;			
+	line-height: 25px;			
     min-width: 20px;
 
 	font-size: 14px;
@@ -452,11 +346,7 @@ li.data_prog {
 	padding: 0;
 	margin: 0;
 
-
-	color: #3c491a;
-
-	border-width: 0px 12px 0px 5px;
-
+    border-width: 0px 12px 0px 5px;
 	text-shadow: #f5f4d7 0px 1px 1px;
 	letter-spacing: -1px;
 	
@@ -465,6 +355,7 @@ li.data_prog {
 	/* This leaves 1 pixel for the midlle part of the image.		*/
 	-webkit-border-image: url(btn_center.png) 0 12 0 5;
 }
+
 .hidediv
 {
     padding-left: 10px;
@@ -475,13 +366,50 @@ li.data_prog {
 .webkit{overflow:visible}
 
 #navboard {
-    width:100%;
     background: #C2CFF1;
+    height:19px;
+    font-size:17px;
+    overflow:hidden;
+}
+
+#navcon {
+    display:inline-block;
+    overflow:hidden;
+    height:19px;
+    line-height:19px;
+}
+
+.hBoard {
+    text-decoration:none;
+    padding:0 4;
+}
+
+.highlight {
+    text-decoration:underline;
+    padding;0 4;
+}
+
+#navboard a {text-decoration:none;}
+
+.navleft {
+    float:left;
+    min-width:30px;
+    display:inline-block;
+    text-align:center;
+    text-decoration:none;
+    background: #0099FF;
+}
+.navright{
+    float:right;
+    min-width:30px;
+    display:inline-block;
+    text-align:center;
+    text-decoration:none;
+    background: #0099FF;
 }
 #main {
     width:100%;
     position:absolute;
-    border-bottom: solid 1px #c2cff1;
 }
 
 #divThreads {
@@ -495,10 +423,6 @@ li.data_prog {
     border-left:solid 1px #c2cff1;
     border-right:solid 1px #c2cff1;
     overflow:auto;
-}
-.hBoard {
-    display:inline-block;
-    margin:5px;
 }
 
 #progress {
