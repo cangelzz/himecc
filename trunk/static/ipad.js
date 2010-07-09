@@ -1,4 +1,9 @@
 $(document).ready(function(){
+    $(".hBoard").click(function(){
+        $(this).siblings().css("background", "");
+        $(this).css("background", "#0099FF");
+    }); 
+
     $('#progress').ajaxStart(function() {
         $(this).show();
     });
@@ -7,6 +12,7 @@ $(document).ready(function(){
         $(this).hide();
 
         $("div#divPosts h1 a.btnCenter").remove();
+        $("#boardh1").remove();
 
         $("a").each(function(){
             var url = this.href;
@@ -28,8 +34,9 @@ $(document).ready(function(){
         }
     
     });
-
-    $("#main").css("height", $(window).height()-$("#navboard").height()-1);
+    
+    $("#navcon").css("width", $(window).width() - 60);
+    $("#main").css("height", $(window).height()-$("#navboard").height());
     if (navigator.userAgent.match(/Chrome/i)) return;
     $("#divThreads").jScrollTouch();
     $("#divPosts").jScrollTouch();
@@ -57,5 +64,13 @@ function loadPost(path)
     $('#divPosts').load(path);
 }
 
+function nav2left()
+{
+    $('#navcon').scrollLeft($('#navcon').scrollLeft() - $('#navcon').width());
+}
 
+function nav2right()
+{
+    $('#navcon').scrollLeft($('#navcon').width() + $('#navcon').scrollLeft());
+}
 
