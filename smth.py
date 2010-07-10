@@ -19,7 +19,7 @@ myHeader = """<html><head>
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
 </head><body>"""
-myFooter = """</body></html>"""
+myFooter = """<h1></h1></body></html>"""
 
 def fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=10):
     return urlfetch.fetch(url, payload=payload, method=method, headers=headers, allow_truncated=allow_truncated, follow_redirects=follow_redirects, deadline=deadline)
