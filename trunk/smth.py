@@ -20,6 +20,7 @@ myHeader = """<html><head>
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
 </head><body>"""
 myFooter = """<h1></h1></body></html>"""
+ipadFooter = """</body></html>"""
 
 def fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=10):
     return urlfetch.fetch(url, payload=payload, method=method, headers=headers, allow_truncated=allow_truncated, follow_redirects=follow_redirects, deadline=deadline)
@@ -329,7 +330,7 @@ def _post(path, type=0):
         expandPost = "/".join(["subject", board, gid])
         boardlink = "/".join(["board", board, "0"])
 #        if type == 1:
-        navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenterLeft'>1</a><a href='/%s' class='btnCenterLeft'>+</a><a href='/%s' class='btnCenter'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
+        navlink = "<h1>%s</h1>" %title + "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenterLeft'>1</a><a href='/%s' class='btnCenterLeft'>+</a><a href='/%s' class='btnCenter'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
 #        else:
 #            navlink = "<h1>%s</h1><h1 class='nav'><a href=\"javascript:loadPost('/%s')\" class='btnLeft0'>&lt;</a><a href=\"javascript:loadPost('/%s')\" class='btnCenterLeft'>1</a><a href=\"javascript:loadPost('/%s')\" class='btnCenterLeft'>+</a><a href=\"javascript:loadPost('/%s')\" class='btnCenter'>%s</a><a href=\"javascript:loadPost('/%s')\" class='btnRight0'>&gt;</a></h1>" % (title,lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
 
@@ -366,8 +367,8 @@ ipadHeader = """<html><head>
 def makenav():
     s = []
     for b in favor:
-        s.append("<a class='hBoard' href=\"javascript:loadBoard('/iboard/%s/6')\">%s</a>" % (b, b.capitalize()))
-    return "|".join(s)
+        s.append("<a class='hBoard' href=\"javascript:loadBoard('/iboard/%s/6')\">%s</a>" % (b, b.upper()))
+    return "<span style='color:gray;'>|</span>".join(s)
     #return " ".join(favor)
 
 ipadBody = """
@@ -384,7 +385,7 @@ ipadBody = """
 
 class iPad(webapp.RequestHandler):
     def get(self):
-        print_all(self.response.out.write, [ipadHeader, ipadBody, myFooter])
+        print_all(self.response.out.write, [ipadHeader, ipadBody, ipadFooter])
 
 
 application = webapp.WSGIApplication([('/',  MainPage),

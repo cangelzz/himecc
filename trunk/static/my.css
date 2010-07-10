@@ -381,12 +381,8 @@ li.data_prog {
 
 .hBoard {
     text-decoration:none;
-    padding:0 4;
-}
-
-.highlight {
-    text-decoration:underline;
-    padding;0 4;
+    letter-spacing: -1px;
+    padding:0 2;
 }
 
 #navboard a {text-decoration:none;}
