@@ -12,13 +12,29 @@ div {margin:0;}
 
 h1 {
     font-family: Verdana;
-    font-size: 20px;
+    font-size: 18px;
     color: white;
 	text-align: center;
-	margin:0;
-	padding: 3px;
+	margin: 0;
+	padding: 3;
 /*	height: 32px; */
 	background: #32598b;
+}
+
+h1 a.login {
+    display:block;
+    float:right;
+    font-size: 12px;
+    margin:0 2;
+    padding:2 4;
+    text-decoration:none;
+    color:white;
+    width: 30px;
+    background: #3366CC;
+}
+
+h1 a.login:first-child {
+    margin-left:0;
 }
 
 .author {
@@ -296,6 +312,35 @@ li.data_prog {
 	/* -webkit-border-image divides the leftButton image into 2 corners and middle part.	*/
 	/* The left corner is 12 pixels wide. The right corner is 5 pixels wide and the middle part is 1 pixel. */
 	-webkit-border-image: url(btn_left.png) 0 5 0 12;		
+}
+.btnGo
+{
+    margin-left: 4px;
+    text-decoration: none;
+	text-align: center;
+    display: inline-block;
+	
+	height: 25px;
+	line-height: 25px;
+    min-width: 40px;
+
+	font-size: 14px;
+	font-weight: bold;
+	font-family: Helvetica;
+	color: #3c491a;
+	
+	padding: 0;
+
+	border-width: 0px 12px 0px 5px;
+
+	text-shadow: #f5f4d7 0px 1px 1px;
+	letter-spacing: -1px;
+	
+	/* -webkit-border-image divides the rightButton image into three parts. */
+	/* The right and left corners of the image are respectively 12 pixels and 5 pixels wide. */
+	/* This leaves 1 pixel for the midlle part of the image.		*/
+	-webkit-border-image: url(btn_right.png) 0 12 0 5;
+
 }
 
 .btnRight0
