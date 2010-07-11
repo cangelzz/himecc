@@ -1,5 +1,11 @@
-﻿favor = [
-'top10',
+﻿from google.appengine.ext import db
+
+class Favor(db.Model):
+    user = db.UserProperty()
+    favorlist = db.ListProperty(str)
+    sort = db.BooleanProperty()
+
+favor = [
 'adagent_tg',
 'age',
 'apple',

@@ -19,7 +19,7 @@ handlers:
   static_files: static/favicon.png
   upload: static/favicon.png  
 
-- url: /(ipad|smth|board|subject|post|ipost|isubject|iboard)/.*
+- url: /(ipad|smth|board|subject|post|ipost|isubject|iboard|config)/.*
   script: smth.py
 
 - url: /(jj|jjboard|jjsubject)/.*

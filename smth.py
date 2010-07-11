@@ -1,16 +1,18 @@
 ﻿# emacs-mode: -*- python-*-
 # -*- coding: utf-8 -*-
 # author: cangelzz@smth
-# last-modified: 2010-01-12
+# last-modified: 2010-07-12
 
 from google.appengine.ext import webapp 
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import urlfetch
 #from google.appengine.api.urlfetch import fetch
 from google.appengine.api import images
+from google.appengine.ext import db
 from random import random
 import re 
-from define import id2board, board2id, favor, favor2chs
+from define import id2board, board2id, favor, favor2chs, Favor
+import logging
 
 #myContentType = "text/html; charset='utf-8'"
 myHeader = """<html><head>
@@ -37,14 +39,88 @@ def print_all(func, li):
     for line in li:
         func(line)
 
+from google.appengine.api import users
+def _login_info(request):
+    user = users.get_current_user()
+    if user:
+        url = users.create_logout_url(request.path)
+        html = ", %s<a class='login' href='%s'>Out</a><a class='login' href='/config/'>C</a>" % (user.nickname(), url)
+    else:
+        url = users.create_login_url(request.path)
+        html = ", Guest<a class='login' href='%s'>In</a>" % url
+
+    return html
+
+def _user(email="anonymous@gmail.com"):
+    user = users.get_current_user()
+    if not user:
+        user = users.User(email)
+    return user
+    
+class Config(webapp.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        config = db.GqlQuery("SELECT * FROM Favor WHERE user=:1", user).get()
+        favorstext = ""
+        chk_value = ""
+        if config:
+            favorstext = ",".join(config.favorlist)
+            chk_value = config.sort == "on" and "checked" or ""
+        html = """<form action="/config/" method="post">
+<label for="favors">Favors </lable><input type="text" name="favors" id="favors"/ value="%s"><br/>
+<lable for="sort">Sort <input type="checkbox" name="sort" id="sort" checked="%s" /><br/>
+<input type="submit" value="Submit" />
+</form>
+""" % (favorstext, chk_value)
+
+        print_all(self.response.out.write, [myHeader, html, myFooter])
+
+    def post(self):
+        user = users.get_current_user()
+        if not user:
+            self.redirect("/")
+        else:
+            favors = re.split("[^\w\d_]", str(self.request.get("favors")))
+            sort = self.request.get("sort") == "on" and True or False
+            config = db.GqlQuery("SELECT * FROM Favor WHERE user=:1", user).get()
+            if config:
+                config.favorlist = favors
+                config.sort = sort
+            else:
+                config = Favor(user=user, favorlist=favors, sort=sort)
+            config.put()
+            self.redirect("/")
+                
+
+def _favor():
+    user = users.get_current_user()
+    if not user:
+        return True, favor
+
+    config = db.GqlQuery("SELECT * FROM Favor WHERE user=:1", user).get()
+    if not config:
+        return True, favor
+    if config.favorlist in [[],[""],None]:
+        return True, favor
+    else:
+        if config.sort:
+            return False, ["top10"] + sorted(config.favorlist, key=unicode.encode)
+        else:
+            return False, favor
+
 class MainPage(webapp.RequestHandler):
     def get(self):
 #        self.response.headers['Content-Type'] = myContentType
-        head = "<h1>Newsmth</h1>"
-        navlink = """<h1 class="navjump"><input id='boardtogo' type="text" /><a onclick="this.href='/board/6'+document.getElementById('boardtogo').value" class='btnRight0'>Go</a></h1>"""
+        head = "<h1>Welcome%s</h1>" % _login_info(self.request)
+        navlink = """<h1 class="navjump"><input id='boardtogo' type="text" /><a onclick="this.href='/board/6'+document.getElementById('boardtogo').value" class='btnGo'>Go</a></h1>"""
         page = ['<ul class="boards">']
-        for b in favor:
-            page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div><div style='display:inline-block;float:right'>%s</div></a></li>" % (b, b.upper(), favor2chs[b]))
+
+        default, favorlist = _favor()
+        for b in favorlist:
+            if default:
+                page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div><div style='display:inline-block;float:right'>%s</div></a></li>" % (b, b.upper(), favor2chs[b]))
+            else:
+                page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div></a></li>" % (b, b.upper()))
         page.append("</ul>")
         print_all(self.response.out.write, [myHeader, head, navlink, "".join(page), myFooter])
 
@@ -181,6 +257,8 @@ def _content(bid, id, page=""):
                 img = images.Image(bindata)
                 if img.width > 300:
                     img.resize(300)
+                else:
+                    img.resize(img.width)
                 resizedata = img.execute_transforms(images.JPEG)
                 import base64
                 base64data = base64.encodestring(resizedata)
@@ -398,6 +476,7 @@ application = webapp.WSGIApplication([('/',  MainPage),
                                       ('/ipost/.*', iPost),
                                       ('/iboard/.*', iBoard),
                                       ('/isubject/.*', iSubject),
+                                      ('/config/.*', Config),
                                       ], debug=True)
 
 def main():
