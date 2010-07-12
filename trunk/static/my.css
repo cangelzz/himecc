@@ -102,9 +102,26 @@ div.floatright
     text-align: left;
 }
 
-input {
-    height: 29px;
+form {margin:0px}
+
+form textarea {
+    width: 100%;
+    height: 80px;
+}
+
+form input[type=text] {
+    height: 60px;
+    width: 290px;
+    margin-left:10px;
+}
+
+form input[type=checkbox] {
+    margin-left: 29px;
+}
+
+form input[type=submit] {
     width: 200px;
+    height: 30px;
 }
 
 h2 {
@@ -124,19 +141,18 @@ ul {
 	padding: 0;	   
 	margin-top:0;
     margin-bottom:0;
-	
 	font-size:14px;
 	font-family: Helvetica;
-/*	font-weight:bold; */
-/*	color:black; */
-	
-	background-color: white;       /* Each list has a white background fill */
-	
+	background-color: white;       /* Each list has a white background fill */	
 	border-width: 1px;		       /* Draw a rectangle around each list */
     border-style:solid ;
 	border-color:#ddd;
 }
 
+form ul {
+    margin: 10px 10px;
+    -webkit-border-radius:8px; 
+}
 
 .logo {
 	display: block;
