@@ -21,7 +21,20 @@ myHeader = """<html><head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
-</head><body>""" % (DEBUG and """<script src="/static/jquery.js"></script>""" or "")
+<script>
+function setOrientation() {
+  var orient = (window.innerWidth||320)==320?"portrait":"landscape";
+  var cl = document.body.className;
+  cl = cl.replace(/portrait|landscape/, orient);
+  document.body.className = cl;
+};
+
+window.addEventListener('load', setOrientation, false);
+window.addEventListener('orientationchange', setOrientation, false);
+
+</script>
+</head><body>""" % (DEBUG and "<script src='/static/jquery.js'></script>" or "")
+
 myFooter = """<h1></h1></body></html>"""
 ipadFooter = """</body></html>"""
 
