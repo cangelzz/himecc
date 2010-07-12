@@ -14,18 +14,19 @@ import re
 from define import id2board, board2id, favor, favor2chs, Favor
 import logging
 
-#myContentType = "text/html; charset='utf-8'"
+DEBUG = False
 myHeader = """<html><head>
 <link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
+%s
 <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
-</head><body>"""
+</head><body>""" % (DEBUG and """<script src="/static/jquery.js"></script>""" or "")
 myFooter = """<h1></h1></body></html>"""
 ipadFooter = """</body></html>"""
 
 def fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=10):
-    return urlfetch.fetch(url, payload=payload, method=method, headers=headers, allow_truncated=allow_truncated, follow_redirects=follow_redirects, deadline=deadline)
+    return urlfetch.fetch(url, payload=payload, method=method, headers=headers, allow_truncated=True, follow_redirects=follow_redirects, deadline=deadline)
 
 def convertFromGB2312ToUTF8(onestr):
     newstr = onestr
@@ -188,17 +189,22 @@ def _board(path, type=0):
 
         navlink_top = head + navlink
         page = ["<ul class='threads'>"]
-        for p in posts:
-            if paras[3] == "0":
-#                if type == 1:
-#                    page.append(("<li><a href=\"javascript:loadPost('/ipost/%s/%s')\">%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (m.group(1), p[0], p[5], p[2])))
-#                else:
-                    page.append(("<li><a href='/post/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (m.group(1), p[0], p[5], p[2])))
+
+        def _classname(mark, title, type):
+            classes = []
+            if "@" in mark: classes.append("att")
+            if type == "0" and not title.startswith("Re: "): classes.append("mainsub")
+            if len(classes) == 0:
+                return ""
             else:
-#                if type == 1:
-#                    page.append(("<li><a href=\"javascript:loadSubject('/isubject/%s/%s')\">%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (board, p[0], p[5], p[2])))
-#                else:
-                    page.append(("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (board, p[0], p[5], p[2])))
+                return " class=\"%s\"" % (" ".join(classes))
+
+        for p in posts:
+            classname = _classname(p[3], p[5], paras[3])
+            if paras[3] == "0":
+                page.append(("<li%s><a href='/post/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (classname, m.group(1), p[0], p[5], p[2])))
+            else:
+                page.append(("<li%s><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (classname, board, p[0], p[5], p[2])))
 
         page.append("</ul>")
 

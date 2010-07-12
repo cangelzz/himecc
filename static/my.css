@@ -116,7 +116,7 @@ ul {
 	background-color: white;       /* Each list has a white background fill */
 	
 	border-width: 1px;		       /* Draw a rectangle around each list */
-	border-style:solid ;
+    border-style:solid ;
 	border-color:#ddd;
 	
 /*	-webkit-border-radius: 8px;		 /* Round each corner of the created rectangle */
@@ -152,6 +152,16 @@ li .metadados {
 
 li:first-child  {
 	border-top:0;    /* Remove border above the first item of the list */
+}
+
+.mainsub
+{
+    border-left: 2px solid #3366FF;
+}
+
+.att
+{
+    border-right: 2px solid #FF6666;
 }
 
 
