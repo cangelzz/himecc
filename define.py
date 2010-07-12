@@ -45,6 +45,7 @@ top90_group = zip(["Schools","Entertainment","GameZone","SportsZone","Info","Sen
 
 favor2chs = {
 'top10' : "十大话题",
+'top90' : "分类精彩",
 'adagent_tg' : "团购",
 'age' : "大龄男女",
 'apple' : "苹果电脑",
