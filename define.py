@@ -41,6 +41,8 @@ favor = [
 'worklife',
 ]
 
+top90_group = zip(["Schools","Entertainment","GameZone","SportsZone","Info","Sensibility","Culture","Academics","IT"], range(1,10))
+
 favor2chs = {
 'top10' : "十大话题",
 'adagent_tg' : "团购",

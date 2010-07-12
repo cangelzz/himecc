@@ -11,7 +11,7 @@ from google.appengine.api import images
 from google.appengine.ext import db
 from random import random
 import re 
-from define import id2board, board2id, favor, favor2chs, Favor
+from define import id2board, board2id, favor, favor2chs, Favor, top90_group
 import logging
 
 DEBUG = False
@@ -85,10 +85,10 @@ class Config(webapp.RequestHandler):
         if config:
             favorstext = ",".join(config.favorlist)
             chk_value = config.sort == "on" and "checked" or ""
-        html = """<form action="/config/" method="post">
-<label for="favors">Favors </lable><input type="text" name="favors" id="favors"/ value="%s"><br/>
-<lable for="sort">Sort <input type="checkbox" name="sort" id="sort" checked="%s" /><br/>
-<input type="submit" value="Submit" />
+        html = """<h1>Favorites</h1><form action="/config/" method="post"><ul>
+<li><textarea name="favors" id="favors" />%s</textarea></li>
+<li><label for="sort">Sort</label><input type="checkbox" name="sort" id="sort" checked="%s" /></li>
+<li><input type="submit" value="Save" /></li></ul>
 </form>
 """ % (favorstext, chk_value)
 
@@ -123,7 +123,8 @@ def _favor():
         return True, favor
     else:
         if config.sort:
-            return False, ["top10"] + sorted(config.favorlist, key=unicode.encode)
+            newlist = ["top10", "top90"] + sorted([i.encode() for i in config.favorlist], key=str.lower)
+            return False, newlist
         else:
             return False, favor
 
@@ -152,6 +153,25 @@ def smartboard(b):
                 return bs, b
         return "none", b
 
+def _rss(category, idx=None):
+    page = ["<ul class='threads'>"]
+    if category == "top10":
+        url = "http://www.newsmth.net/rssi.php?h=1"
+    else:
+        url = "http://www.newsmth.net/rssi.php?h=2&s=%d" % idx
+        page.append("<li class='group'>"+ category +"</li>")
+
+    result = fetch(url)
+    content = result.content
+    bname_and_id = re.findall("<link>.*?(?<=board=)(\w+).*?gid=(\d+)", content)
+    title_and_author =  re.findall("<description>.*?:\s(.*?),.*?<br/>.*?:\s(.*?)<br/>",content)
+
+    for g1, g2 in zip(bname_and_id, title_and_author):
+        page.append("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span> <span class='boardinth'>[%s]</span></a></li>" % (g1[0], g1[1], g2[1], g2[0], g1[0]))
+    page.append("</ul>")
+
+    return "".join(page)
+
 def _board(path, type=0):
         #  2     3    4
         # /board/type/page
@@ -165,31 +185,21 @@ def _board(path, type=0):
             pagetogo = "&page=" + paras[4]
 
         head = "<h1 id='boardh1'>%s</h1>" % board.upper()
+        if type == 1:
+            navlink = ""
+        else:
+            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a></h1>"
+        navlink_top = head + navlink
 
         if board == "top10":
-            url = "http://www.newsmth.net/rssi.php?h=1"
-            result = fetch(url)
-            #content = convertFromGB2312ToUTF8(result.content)
-            content = result.content
-            bname_and_id = re.findall("<link>.*?(?<=board=)(\w+).*?gid=(\d+)", content)
-            title_and_author =  re.findall("<description>.*?:\s(.*?),.*?<br/>.*?:\s(.*?)<br/>",content)
+            return navlink_top, navlink, _rss(board)
 
-            if type == 1:
-                navlink = ""
-            else:
-                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a></h1>"
-
-            navlink_top = head + navlink
-
-            page = ["<ul class='threads'>"]
-            for g1, g2 in zip(bname_and_id, title_and_author):
-#                if type == 1:
-#                    page.append("<li><a href=\"javascript:loadSmart('/isubject/%s/%s')\">%s&nbsp;&nbsp;<span class='author'>%s</span> <span class='boardinth'>[%s]</span></a></li>" % (g1[0], g1[1], g2[1], g2[0], g1[0]))
-#                else:
-                    page.append("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span> <span class='boardinth'>[%s]</span></a></li>" % (g1[0], g1[1], g2[1], g2[0], g1[0]))
-            page.append("</ul>")
-
+        if board == "top90":
+            page = []
+            for group, idx in top90_group:
+                page.append(_rss(group, idx))
             return navlink_top, navlink, "".join(page)
+
 
         board, oldboard = smartboard(board.lower())
         if board == "none":
