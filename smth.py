@@ -131,7 +131,7 @@ class MainPage(webapp.RequestHandler):
     def get(self):
 #        self.response.headers['Content-Type'] = myContentType
         head = "<h1>Welcome%s</h1>" % _login_info(self.request)
-        navlink = """<h1 class="navjump"><input id='boardtogo' type="text" /><a onclick="this.href='/board/6'+document.getElementById('boardtogo').value" class='btnGo'>Go</a></h1>"""
+        navlink = """<h1 class="navjump"><input id='boardtogo' type="text" /><a onclick="this.href='/board/'+document.getElementById('boardtogo').value+'/6'" class='btnGo'>Go</a></h1>"""
         page = ['<ul class="boards">']
 
         default, favorlist = _favor()
@@ -142,6 +142,15 @@ class MainPage(webapp.RequestHandler):
                 page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div></a></li>" % (b, b.upper()))
         page.append("</ul>")
         print_all(self.response.out.write, [myHeader, head, navlink, "".join(page), myFooter.replace("<!-->", copyright)])
+
+
+def smartboard(b):
+    if b in board2id.keys(): return b, b
+    else:
+        for bs in sorted(board2id.keys()):
+            if b in bs:
+                return bs, b
+        return "none", b
 
 def _board(path, type=0):
         #  2     3    4
@@ -180,7 +189,15 @@ def _board(path, type=0):
                     page.append("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span> <span class='boardinth'>[%s]</span></a></li>" % (g1[0], g1[1], g2[1], g2[0], g1[0]))
             page.append("</ul>")
 
-            return [navlink_top, navlink, "".join(page)]
+            return navlink_top, navlink, "".join(page)
+
+        board, oldboard = smartboard(board.lower())
+        if board == "none":
+            navlink = '<h1 class="nav"><a href="javascript:history.go(-1)" class="btnCenter">Home</a></h1>'
+            page = "<li>Board <span style='color:red'>%s</span> doesn't exist</li>" % oldboard
+            return navlink, "", page
+
+        head = "<h1 id='boardh1'>%s</h1>" % board.upper()
 
         if paras[3] == "0":
             ftype = ""
@@ -226,7 +243,7 @@ def _board(path, type=0):
 
         page.append("</ul>")
 
-        return [navlink_top, navlink, "".join(page)]
+        return navlink_top, navlink, "".join(page)
 
 class Board(webapp.RequestHandler):
     def get(self):
@@ -396,7 +413,7 @@ def _subject(path, type=0):
             page += "<li>%s</li>" % result
         page += "</ul>"
 
-        return [navlink, navlink_bottom, page]
+        return navlink, navlink_bottom, page
 
 class Subject(webapp.RequestHandler):
     def get(self):
@@ -436,7 +453,7 @@ def _post(path, type=0):
 #        else:
 #            navlink = "<h1>%s</h1><h1 class='nav'><a href=\"javascript:loadPost('/%s')\" class='btnLeft0'>&lt;</a><a href=\"javascript:loadPost('/%s')\" class='btnCenterLeft'>1</a><a href=\"javascript:loadPost('/%s')\" class='btnCenterLeft'>+</a><a href=\"javascript:loadPost('/%s')\" class='btnCenter'>%s</a><a href=\"javascript:loadPost('/%s')\" class='btnRight0'>&gt;</a></h1>" % (title,lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
 
-        return [navlink, "<ul class='posts'><li>" + _content_html(c[6:], 1) + "</li></ul>"]
+        return navlink, "<ul class='posts'><li>" + _content_html(c[6:], 1) + "</li></ul>"
 
 class Post(webapp.RequestHandler):
     def get(self):
