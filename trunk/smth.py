@@ -35,7 +35,8 @@ window.addEventListener('orientationchange', setOrientation, false);
 </script>
 </head><body>""" % (DEBUG and "<script src='/static/jquery.js'></script>" or "")
 
-myFooter = """<h1></h1></body></html>"""
+myFooter = """<div id="footer"></div><!--></body></html>"""
+copyright = """<div id="copyright"><a href="http://code.google.com/p/himecc/" target="_blank" class="about">code</a><a href="/static/about.html" class="about">about</a><div>"""
 ipadFooter = """</body></html>"""
 
 def fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=10):
@@ -55,10 +56,14 @@ def print_all(func, li):
 
 from google.appengine.api import users
 def _login_info(request):
+    def _nick(user):
+        nick = user.nickname()
+        inx = nick.find("@")
+        return (inx == -1) and nick or nick[:inx]
     user = users.get_current_user()
     if user:
         url = users.create_logout_url(request.path)
-        html = ", %s<a class='login' href='%s'>Out</a><a class='login' href='/config/'>C</a>" % (user.nickname(), url)
+        html = ", %s<a class='login' href='%s'>Out</a><a class='login' href='/config/'>C</a>" % (_nick(user), url)
     else:
         url = users.create_login_url(request.path)
         html = ", Guest<a class='login' href='%s'>In</a>" % url
@@ -136,7 +141,7 @@ class MainPage(webapp.RequestHandler):
             else:
                 page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div></a></li>" % (b, b.upper()))
         page.append("</ul>")
-        print_all(self.response.out.write, [myHeader, head, navlink, "".join(page), myFooter])
+        print_all(self.response.out.write, [myHeader, head, navlink, "".join(page), myFooter.replace("<!-->", copyright)])
 
 def _board(path, type=0):
         #  2     3    4

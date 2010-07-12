@@ -10,9 +10,9 @@ body {
 body.portrait{min-height:480px}
 body.landscape{min-height:320px}
 
-html {margin:0}
+html {margin:0px}
 
-div {margin:0;}
+div {margin:0px;padding:0px;}
 
 h1 {
     font-family: Verdana;
@@ -21,7 +21,6 @@ h1 {
 	text-align: center;
 	margin: 0;
 	padding: 3;
-/*	height: 32px; */
 	background: #32598b;
 }
 
@@ -35,6 +34,31 @@ h1 a.login {
     color:white;
     width: 30px;
     background: #3366CC;
+}
+
+h1 input {
+    height: 24px;
+    font-size:16px;
+}
+
+#footer {
+	background: #32598b;
+    height:3px;
+}
+
+#copyright {
+    display: block;
+    text-align:center;
+    padding:2px 5px 5px;
+}
+
+a.about {
+    font-size: 12px;
+    margin:0 2;
+    padding:2 4;
+    text-decoration:none;
+    color:black;
+    width: 30px;
 }
 
 h1 a.login:first-child {
@@ -83,17 +107,6 @@ input {
     width: 200px;
 }
 
-h1 a.logo {
-	margin-top: 0;
-	width: 118px;
-	height: 24px;
-	background: url(../images/logo_meuguiatv.png) no-repeat;
-}
-
-h1 a.logo span {
-	display: none;
-}
-
 h2 {
 	margin:0;
 	padding-top:15px;		  
@@ -122,8 +135,6 @@ ul {
 	border-width: 1px;		       /* Draw a rectangle around each list */
     border-style:solid ;
 	border-color:#ddd;
-	
-/*	-webkit-border-radius: 8px;		 /* Round each corner of the created rectangle */
 }
 
 
@@ -146,6 +157,18 @@ li {
     padding: 4px 6px;
     word-wrap: break-word; /* css3 */
 
+}
+
+li.group {
+    position: relative;
+    top:-1px;
+    margin-bottom: -2px;
+    padding: 2px 4px;
+    background: url(listGroup.png) repeat-x;
+    font-size:16px;
+    font-weight:bold;
+    text-shadow: rgba(0,0,0,0.4) 0 1px 0;
+    color: #FFFFFF;
 }
 
 li .metadados {
@@ -188,22 +211,6 @@ li.home a {
 li a.normal {
     display: inline;
 }
-
-li.data_prog {
-	height: 30px;
-	line-height: 30px;
-	margin:0;
-	padding:0 0 0 8px;
-	color:#666;
-	background:rgb(217,217,217);
-}
-
-
-#erro {
-	padding: 8px;
-	height: 60px;
-}
-
 
 .button	
 {	
