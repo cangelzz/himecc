@@ -123,7 +123,7 @@ def _favor():
         return True, favor
     else:
         if config.sort:
-            newlist = ["top10", "top90"] + sorted([i.encode() for i in config.favorlist], key=str.lower)
+            newlist = sorted([i.encode() for i in config.favorlist], key=str.lower)
             return False, newlist
         else:
             return False, favor
@@ -136,7 +136,7 @@ class MainPage(webapp.RequestHandler):
         page = ['<ul class="boards">']
 
         default, favorlist = _favor()
-        for b in favorlist:
+        for b in ["top10", "top90"] + favorlist:
             if default:
                 page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div><div style='display:inline-block;float:right'>%s</div></a></li>" % (b, b.upper(), favor2chs[b]))
             else:
