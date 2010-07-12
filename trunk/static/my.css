@@ -192,16 +192,15 @@ li:first-child  {
 }
 
 
-li a {  /* Handle the click/tap highlight. Highlight an entire cell with the iPhone grey background when tapped */
-
-	display: block;   /* Sets the href to be a block rather than inline */
-	
-	/* The padding properties adjust the text content within the href block */
-
+li a {
+	display: block;
 	padding: 3px;
 	text-decoration: none;
 	color:black;
+}
 
+.threads li a:visited {
+    color: coral;
 }
 
 li.home a {
