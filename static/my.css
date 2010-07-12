@@ -4,7 +4,11 @@ body {
 	padding: 0;
 	background: #ebebeb;
 	-webkit-text-size-adjust:none;		  /* Turn off font resizing */
+    width: 100%;
 }
+
+body.portrait{min-height:480px}
+body.landscape{min-height:320px}
 
 html {margin:0}
 
