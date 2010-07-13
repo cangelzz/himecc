@@ -559,7 +559,7 @@ ipadBody = """
 
 class iPad(webapp.RequestHandler):
     def get(self):
-        print_all(self.response.out.write, [ipadHeader, ipadBody, ipadFooter])
+        print_all(self, [ipadHeader, ipadBody, ipadFooter])
 
 
 application = webapp.WSGIApplication([('/',  MainPage),
