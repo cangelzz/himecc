@@ -183,7 +183,7 @@ def _rss(category, idx=None):
 
     return "".join(page)
 
-def _board(path, type=0):
+def _board(path, rtype=0):
         #  2     3    4
         # /board/type/page
         paras = path.split('/')
@@ -196,7 +196,7 @@ def _board(path, type=0):
             pagetogo = "&page=" + paras[4]
 
         head = "<h1 id='boardh1'>%s</h1>" % board.upper()
-        if type == 1:
+        if rtype == 1:
             navlink = ""
         else:
             navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/' style='{width:66px}'>Home</a></h1>"
@@ -250,10 +250,10 @@ def _board(path, type=0):
         navlink_top = head + navlink
         page = ["<ul class='threads'>"]
 
-        def _classname(mark, title, type):
+        def _classname(mark, title, rtype):
             classes = []
             if "@" in mark: classes.append("att")
-            if type == "0" and not title.startswith("Re: "): classes.append("mainsub")
+            if rtype == "0" and not title.startswith("Re: "): classes.append("mainsub")
             if len(classes) == 0:
                 return ""
             else:
@@ -341,10 +341,10 @@ def _content(bid, id, page=""):
     # board, bid, id, gid, reid, title, author, reply, refer, attach
     # 0      1    2   3    4     5      6       7      8      9
     #                                   0       1      2      3
-def _content_html(li, type):
-    if type == 1:
+def _content_html(li, rtype):
+    if rtype == 1:
         return "<span class='author'>%s</span>: <span style='margin:0px;padding:0px;'>%s<span style='color:grey;'><br/>%s</span>%s</span>" % (li[0], li[1], li[2], li[3])
-    elif type == 2:
+    elif rtype == 2:
         random_id = str(random())[2:]
         refer = ""
         if li[2] != "":
@@ -374,7 +374,7 @@ def getContentHeji(bid, id):
             result.append(re.sub("(^[\w\d]+.*?\)).*?提到:", r"<span class='author'>\1</span>: ",p))
         return "<li>" + "</li><li>".join(result) + "</li>"
 
-def _subject(path, type=0):
+def _subject(path, rtype=0):
         paras = path.split('/')
         board,gid = paras[2],paras[3]
         if (len(paras) == 4):
