@@ -36,7 +36,7 @@ window.addEventListener('orientationchange', setOrientation, false);
 </head><body>""" % (DEBUG and "<script src='/static/jquery.js'></script>" or "")
 
 myFooter = """<div id="footer"></div><!--></body></html>"""
-copyright = """<div id="copyright"><a href="http://code.google.com/p/himecc/" target="_blank" class="about">code</a><a href="/static/about.html" class="about">about</a><div>"""
+copyright = """<div id="copyright"><a href="/smart/" class="about">smart</a><a href="http://code.google.com/p/himecc/" target="_blank" class="about">code</a><a href="/static/about.html" class="about">about</a><div>"""
 ipadFooter = """</body></html>"""
 
 def fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=10):
@@ -50,9 +50,9 @@ def convertFromGB2312ToUTF8(onestr):
         pass
     return newstr.encode('utf-8', 'ignore')
 
-def print_all(func, li):
+def print_all(handler, li):
     for line in li:
-        func(line)
+        handler.response.out.write(line)
 
 from google.appengine.api import users
 def _login_info(request):
@@ -92,7 +92,7 @@ class Config(webapp.RequestHandler):
 </form>
 """ % (favorstext, chk_value)
 
-        print_all(self.response.out.write, [myHeader, html, myFooter])
+        print_all(self, [myHeader, html, myFooter])
 
     def post(self):
         user = users.get_current_user()
@@ -142,7 +142,7 @@ class MainPage(webapp.RequestHandler):
             else:
                 page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div></a></li>" % (b, b.upper()))
         page.append("</ul>")
-        print_all(self.response.out.write, [myHeader, head, navlink, "".join(page), myFooter.replace("<!-->", copyright)])
+        print_all(self, [myHeader, head, navlink, "".join(page), myFooter.replace("<!-->", copyright)])
 
 
 def smartboard(b):
@@ -258,12 +258,12 @@ def _board(path, type=0):
 class Board(webapp.RequestHandler):
     def get(self):
         navlink_top, navlink, page = _board(self.request.path)
-        print_all(self.response.out.write, [myHeader, navlink_top, page, navlink, myFooter])
+        print_all(self, [myHeader, navlink_top, page, navlink, myFooter])
 
 class iBoard(webapp.RequestHandler):
     def get(self):
         navlink_top, navlink, page = _board(self.request.path, 1)
-        print_all(self.response.out.write, [navlink_top, page, navlink])
+        print_all(self, [navlink_top, page, navlink])
 
 def filterText(s):
     telnet_ctrl = re.compile("[[0-9;]+m")
@@ -366,7 +366,6 @@ def _subject(path, type=0):
             pagenum = "&start=" + gid + "&pno=" + paras[4]
 
         url = 'http://www.newsmth.net/bbstcon.php?board=%s&gid=%s%s' % (board, gid, pagenum)
-#        self.response.out.write(((board + '  ') + gid))
         result = fetch(url)
         t = re.search("<title>.*?-.*?-(.*?)</title>", convertFromGB2312ToUTF8(result.content))
         m = re.search("tconWriter.*?\\d+,\\d+,\\d+,(\\d+),(\\d+),", result.content)
@@ -428,12 +427,12 @@ def _subject(path, type=0):
 class Subject(webapp.RequestHandler):
     def get(self):
         navlink, navlink_bottom, page = _subject(self.request.path)
-        print_all(self.response.out.write, [myHeader, navlink, page, navlink_bottom, myFooter])
+        print_all(self, [myHeader, navlink, page, navlink_bottom, myFooter])
 
 class iSubject(webapp.RequestHandler):
     def get(self):
         navlink, navlink_bottom, page = _subject(self.request.path, 1)
-        print_all(self.response.out.write, [navlink, page, navlink_bottom])
+        print_all(self, [navlink, page, navlink_bottom])
 
 def _post(path, type=0):
         paras = path.split('/')
@@ -468,12 +467,12 @@ def _post(path, type=0):
 class Post(webapp.RequestHandler):
     def get(self):
         navlink, page = _post(self.request.path)
-        print_all(self.response.out.write, [myHeader, navlink, page, myFooter])
+        print_all(self, [myHeader, navlink, page, myFooter])
 
 class iPost(webapp.RequestHandler):
     def get(self):
         navlink, page = _post(self.request.path, type=1)
-        print_all(self.response.out.write, [navlink, page])
+        print_all(self, [navlink, page])
 
 class Test(webapp.RequestHandler):
     def get(self):
@@ -483,6 +482,46 @@ class Test(webapp.RequestHandler):
         #navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>%s</a>%s<a href='%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum), makejumplist(curPage, totalPage, board, gid))
         self.response.out.write(myHeader)
         self.response.out.write(content)
+
+class Smart(webapp.RequestHandler):
+    html = """<h1>Smart Jump</h1><form action="/smart/" method="post">
+<h1 class="nav"><a class="btnCenter" href="/">Home</a></h1>
+<ul><!-->
+<li><label for="URL">URL</label></li><li><input type="text" name="URL" id="smartinput" /></li>
+<li><label for="redirect">Redirect</label><input type="checkbox" name="redirect" id="redirect" /></li>
+<li><input type="submit" value="Go" /></li>
+<li>Usage: copy the link here as examples below:<br>
+<pre>
+http://www.newsmth.net/bbstcon.php?board=MMJoke&gid=87303
+http://www.newsmth.net/bbscon.php?bid=458&id=1036275
+board=Apple&gid=122345
+board:Age,gid:3345667
+</pre></li>
+</ul>
+</form>"""
+
+    def get(self):
+        print_all(self, [myHeader, self.html, myFooter])
+
+    def post(self):
+        url = self.request.get("URL")
+        redirect = self.request.get("redirect") == "on" and True or False
+
+        urlgo =""
+        m = re.search("board.([\w\d_]+).gid.(\d+)", url)
+        if m: urlgo = "/subject/%s/%s" % m.groups()
+        m = re.search("bid.(\d+).id.(\d+)", url)
+        if m: urlgo = "/post/%s/%s" % m.groups()
+
+        if urlgo:
+            if redirect: self.redirect(urlgo)
+            else: 
+                page = self.html.replace("<!-->", "<li><a href='%s' target='_blank' class='urlgo'>Click: %s</a></li>" % (urlgo, urlgo))
+                print_all(self, [myHeader, page, myFooter])
+                return
+
+        msg = "<li>The URL: <span style='color:red'>%s</span> doesn't match any patter</li>" % url
+        print_all(self, [myHeader, self.html.replace("<!-->", msg), myFooter])
 
 ipadHeader = """<html><head>
 <link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
@@ -528,6 +567,7 @@ application = webapp.WSGIApplication([('/',  MainPage),
                                       ('/iboard/.*', iBoard),
                                       ('/isubject/.*', iSubject),
                                       ('/config/.*', Config),
+                                      ('/smart/.*', Smart),
                                       ], debug=True)
 
 def main():
