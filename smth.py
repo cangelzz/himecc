@@ -15,7 +15,6 @@ import logging
 
 DEBUG = False
 tracking = """<script type="text/javascript">
-
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-17431453-1']);
   _gaq.push(['_trackPageview']);
@@ -25,16 +24,13 @@ tracking = """<script type="text/javascript">
     ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
-
 </script>"""
-
+#"<script src='/static/jquery.js'></script>
 myHeader = """<html><head>
 <link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
-%s
 <meta http-equiv="content-type" content="text/html; charset=utf-8"> 
 <meta name="viewport" content="width=device-width, user-scalable=no">
-<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
-<script>
+<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />""" + tracking + """<script>
 function setOrientation() {
   var orient = (window.innerWidth||320)==320?"portrait":"landscape";
   var cl = document.body.className;
@@ -45,10 +41,9 @@ function setOrientation() {
 window.addEventListener('load', setOrientation, false);
 window.addEventListener('orientationchange', setOrientation, false);
 </script>
+</head><body>"""
 
-</head><body>""" % (DEBUG and "<script src='/static/jquery.js'></script>" or "")
-
-myFooter = tracking + """<div id="footer"></div><!--></body></html>"""
+myFooter = """<div id="footer"></div><!--></body></html>"""
 copyright = """<div id="copyright"><a href='/ipad/'>ipad</a><a href="/smart/">smart</a><a href="http://code.google.com/p/himecc/" target="_blank">code</a><a href="/static/about.html">about</a><div>"""
 ipadFooter = tracking + """</body></html>"""
 
