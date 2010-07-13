@@ -94,13 +94,18 @@ div.floatright
     background: #b2d281;
     text-align: center;
     min-height:25px;
-   /* height: 32px; */
+}
+
+.error{
+    background: firebrick;
+    min-height:25px;
 }
 
 .navjump{
     background: #b2d281;
     text-align: left;
 }
+
 
 form {margin:0px}
 
@@ -280,6 +285,12 @@ li a.normal {
 	-webkit-border-image: url(btn_center.png) 0 5 0 12;		
 }
 
+.btnCenter2
+{
+    position:relative;
+    left: -18px;
+}
+
 .btnCenterLeft
 {	
 
@@ -442,6 +453,7 @@ li a.normal {
     padding-left: 10px;
     text-align: center;
     display: none;
+    word-wrap: break-word; /* css3 */
 }
 
 .webkit{overflow:visible}

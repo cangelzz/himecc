@@ -6,7 +6,6 @@
 from google.appengine.ext import webapp 
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import urlfetch
-#from google.appengine.api.urlfetch import fetch
 from google.appengine.api import images
 from google.appengine.ext import db
 from random import random
@@ -38,6 +37,10 @@ window.addEventListener('orientationchange', setOrientation, false);
 myFooter = """<div id="footer"></div><!--></body></html>"""
 copyright = """<div id="copyright"><a href="/smart/" class="about">smart</a><a href="http://code.google.com/p/himecc/" target="_blank" class="about">code</a><a href="/static/about.html" class="about">about</a><div>"""
 ipadFooter = """</body></html>"""
+
+nav_common = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/' style='{width:66px}'>Home</a></h1>"
+
+page_404 = """<h1 class="error">Error</h1><ul><li><!--></li></ul>"""
 
 def fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=10):
     return urlfetch.fetch(url, payload=payload, method=method, headers=headers, allow_truncated=True, follow_redirects=follow_redirects, deadline=deadline)
@@ -130,7 +133,6 @@ def _favor():
 
 class MainPage(webapp.RequestHandler):
     def get(self):
-#        self.response.headers['Content-Type'] = myContentType
         head = "<h1>Welcome%s</h1>" % _login_info(self.request)
         navlink = """<h1 class="navjump"><input id='boardtogo' type="text" /><a onclick="this.href='/board/'+document.getElementById('boardtogo').value+'/6'" class='btnGo'>Go</a></h1>"""
         page = ['<ul class="boards">']
@@ -188,7 +190,7 @@ def _board(path, type=0):
         if type == 1:
             navlink = ""
         else:
-            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a></h1>"
+            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/' style='{width:66px}'>Home</a></h1>"
         navlink_top = head + navlink
 
         if board == "top10":
@@ -203,7 +205,7 @@ def _board(path, type=0):
 
         board, oldboard = smartboard(board.lower())
         if board == "none":
-            navlink = '<h1 class="nav"><a href="javascript:history.go(-1)" class="btnCenter">Home</a></h1>'
+            navlink = '<h1 class="nav"><a href="javascript:history.go(-1)" class="btnCenter btnCenter2">Home</a></h1>'
             page = "<li>Board <span style='color:red'>%s</span> doesn't exist</li>" % oldboard
             return navlink, "", page
 
@@ -211,10 +213,10 @@ def _board(path, type=0):
 
         if paras[3] == "0":
             ftype = ""
-            boardlink = "<a class='btnCenter' href='/board/%s/6'>Subject</a>" % board
+            boardlink = "<a class='btnCenter btnCenter2' href='/board/%s/6'>Subject</a>" % board
         else:
             ftype =  "&ftype=" + paras[3]
-            boardlink = "<a class='btnCenter' href='/board/%s/0'>Normal</a>" % board
+            boardlink = "<a class='btnCenter btnCenter2' href='/board/%s/0'>Normal</a>" % board
 
         url = 'http://www.newsmth.net/bbsdoc.php?board=' + board + ftype + pagetogo
 
@@ -222,13 +224,17 @@ def _board(path, type=0):
         content = convertFromGB2312ToUTF8(result.content)
         posts = re.findall("c\\.o\\((\\d+),(\\d+),'(.*?)','(.*?)',(\\d+),'(.*?)',(\\d+),\\d+,\\d+\\)", content)
         m = re.search("docWriter.*?(\\d+),\\d+,\\d+,\\d+,(\\d+),", content)
+        if not m:
+            msg = r"错误的讨论区"
+            page = page_404.replace("<!-->", msg)
+            return "", nav_common, page
         page = m.group(2)
 
         lastPage = "/".join(["board", board, paras[3], str(int(page)-1)])
         nextPage = "/".join(isLast and ["board", board, paras[3]] or ["board", board, paras[3], str(int(page) + 1)])
 
         if (isLast):
-            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a>%s</h1>" % (lastPage, boardlink)
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/' style='{width:66px}'>Home</a>%s</h1>" % (lastPage, boardlink)
         else:
             navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a>%s<a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, boardlink, nextPage)
 
@@ -279,6 +285,9 @@ def _content(bid, id, page=""):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s%s' % (bid, id, page))
     result = fetch(url)
     content = filterText(convertFromGB2312ToUTF8(result.content))
+    if re.search(r"<title>发生错误</title>", content):
+        return "ERROR"
+
     title = re.search(r"标  题: (.*?)\\n", content).group(1)
     ids = re.search(r"conWriter.*?'([\w\d]+)',\s(\d+),\s(\d+),\s(\d+),\s(\d+)", content).groups()
     au = re.search(r"发信人: (.*?),", content) #search author
@@ -335,9 +344,7 @@ def getContentHeji(bid, id):
     content = filterText(convertFromGB2312ToUTF8(result.content))
     m = re.search(r"站内(.*)o.h\(0\)", content, (re.MULTILINE | re.DOTALL))
     if m:
-#        s = re.sub(r"^(\\n)+", "", m.group(1).strip())
         s = re.sub(r"(\\n)+", "<br/>", m.group(1).strip("\\n "))
-        #s = re.sub(r"(\\n)+", "<br/>", s)
         s = re.sub("<br/>\s+", "", s)
         hl = "☆─────────────────────────────────────☆"
         ps = s.split(hl)[1:]
@@ -345,16 +352,13 @@ def getContentHeji(bid, id):
         for p in ps:
             inx = p.find("【")
             if inx > 0:
-                st = p[inx:]#.replace(">>", ">")
+                st = p[inx:]
                 refergroup = st.split("<br/>")
                 st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
-                #p = p[:inx] + "<span style='color:grey'>" + st + "</span>"
                 random_id = str(random())[2:]
                 p = p[:inx].replace("<br/>", "") + "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'>" + "<br/>" + st + "</span></a>"
 
             result.append(re.sub("(^[\w\d]+.*?\)).*?提到:", r"<span class='author'>\1</span>: ",p))
-        #s = "<li>" + "</li><li>".join(s.split(hl)[1:]) + "</li>"
-        #return s
         return "<li>" + "</li><li>".join(result) + "</li>"
 
 def _subject(path, type=0):
@@ -369,6 +373,11 @@ def _subject(path, type=0):
         result = fetch(url)
         t = re.search("<title>.*?-.*?-(.*?)</title>", convertFromGB2312ToUTF8(result.content))
         m = re.search("tconWriter.*?\\d+,\\d+,\\d+,(\\d+),(\\d+),", result.content)
+
+        if not m:
+            msg = r"错误的文章号,原文可能已经被删除"
+            page = page_404.replace("<!-->", msg)
+            return "", nav_common, page
 
         totalPage = int(m.group(1))
         curPage = int(m.group(2))
@@ -386,7 +395,7 @@ def _subject(path, type=0):
         boardLink = "<a class='btnCenter' href='/board/%s/6' style='{width:%dpx}'>%s</a>" % (board, len(board)*8,board.upper())
         if curPage == 1:
             if curPage == totalPage:
-                navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink
+                navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink.replace("btnCenter", "btnCenter btnCenter2")
                 navlink_bottom = navlink
             else:
                 nextPage = "/".join(["subject", board, gid, "2"])
@@ -418,7 +427,12 @@ def _subject(path, type=0):
             posts = posts[1:]
 
         for p in posts:
-            result = _content_html(_content(board2id[board.lower()], p[0])[6:], 2)
+            content = _content(board2id[board.lower()], p[0])
+            if content == "ERROR":
+                msg = r"错误的文章号,原文可能已经被删除"
+                page = page_404.replace("<!-->", msg)
+                return "", nav_common, page
+            result = _content_html(content[6:], 2)
             page += "<li>%s</li>" % result
         page += "</ul>"
 
@@ -443,25 +457,18 @@ def _post(path, type=0):
             page = ""
 
         c = _content(bid, id, page)
-        board, bid, id, gid, reid, title = c[:6]
+        if c == "ERROR":
+            msg = r"错误的文章号,原文可能已经被删除"
+            page = page_404.replace("<!-->", msg)
+            return page, nav_common
 
-#        if type == 1:
-#            lastSubPost = "/".join(["ipost", bid, id, "tp"])
-#            nextSubPost = "/".join(["ipost", bid, id, "tn"])
-#            firstPost = "/".join(["ipost", bid, gid])
-#            expandPost = "/".join(["isubject", board, gid])
-#            boardlink = "/".join(["iboard", board, "0"])
-#        else:
+        board, bid, id, gid, reid, title = c[:6]
         lastSubPost = "/".join(["post", bid, id, "tp"])
         nextSubPost = "/".join(["post", bid, id, "tn"])
         firstPost = "/".join(["post", bid, gid])
         expandPost = "/".join(["subject", board, gid])
         boardlink = "/".join(["board", board, "0"])
-#        if type == 1:
-        navlink = "<h1>%s</h1>" %title + "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenterLeft'>1</a><a href='/%s' class='btnCenterLeft'>+</a><a href='/%s' class='btnCenter'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
-#        else:
-#            navlink = "<h1>%s</h1><h1 class='nav'><a href=\"javascript:loadPost('/%s')\" class='btnLeft0'>&lt;</a><a href=\"javascript:loadPost('/%s')\" class='btnCenterLeft'>1</a><a href=\"javascript:loadPost('/%s')\" class='btnCenterLeft'>+</a><a href=\"javascript:loadPost('/%s')\" class='btnCenter'>%s</a><a href=\"javascript:loadPost('/%s')\" class='btnRight0'>&gt;</a></h1>" % (title,lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
-
+        navlink = "<h1>%s</h1>" %title + "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenterLeft'>1</a><a href='/%s' class='btnCenterLeft'>+</a><a href='/%s' class='btnCenter btnCenter2'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
         return navlink, "<ul class='posts'><li>" + _content_html(c[6:], 1) + "</li></ul>"
 
 class Post(webapp.RequestHandler):
@@ -479,7 +486,6 @@ class Test(webapp.RequestHandler):
         url = "http://www.newsmth.net/rssi.php?h=1"
         result = fetch(url)
         content = convertFromGB2312ToUTF8(result.content)
-        #navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>%s</a>%s<a href='%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum), makejumplist(curPage, totalPage, board, gid))
         self.response.out.write(myHeader)
         self.response.out.write(content)
 
