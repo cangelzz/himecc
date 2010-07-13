@@ -295,17 +295,21 @@ def _content(bid, id, page=""):
     result = fetch(url)
     content = filterText(convertFromGB2312ToUTF8(result.content))
     if re.search(r"<title>发生错误</title>", content):
-        return "ERROR"
+        return r"错误的文章号,原文可能已经被删除"
+    try:
+        title = re.search(r"标  题: (.*?)\\n", content).group(1)
+        ids = re.search(r"conWriter.*?'([\w\d]+)',\s(\d+),\s(\d+),\s(\d+),\s(\d+)", content).groups()
+        au = re.search(r"[发寄]信人: (.*?)[,\\n]", content).group(1) #search author
+        m = re.search(r"(来  源|, 站内).*?(\\n)+(.*?)(\\n)+--", content, (re.MULTILINE | re.DOTALL))  #search StationIn #fix zhannei in nickname
+    except AttributeError:
+        import traceback
+        return "<pre>%s</pre>" % traceback.format_exc()
 
-    title = re.search(r"标  题: (.*?)\\n", content).group(1)
-    ids = re.search(r"conWriter.*?'([\w\d]+)',\s(\d+),\s(\d+),\s(\d+),\s(\d+)", content).groups()
-    au = re.search(r"发信人: (.*?),", content) #search author
-    m = re.search(r", 站内(\\n)+(.*?)(\\n)+--", content, (re.MULTILINE | re.DOTALL))  #search StationIn #fix zhannei in nickname
     reply = ""
     refer = ""
     attpart = ""
     if m:
-        s = re.sub(r"(\\n)+", "<br/>", m.group(2).strip("\\n "))
+        s = re.sub(r"(\\n)+", "<br/>", m.group(3).strip("\\n "))
         reply = s #first post
         inx = s.find("【")
         if inx > 0:
@@ -333,7 +337,7 @@ def _content(bid, id, page=""):
                 base64data = base64.encodestring(resizedata)
                 attpart = attpart + "<br/><img src=\"data:image/jpeg;base64," + base64data + "\">"
     
-    return list(ids) + [title, au.group(1), reply, refer, attpart]
+    return list(ids) + [title, au, reply, refer, attpart]
     # board, bid, id, gid, reid, title, author, reply, refer, attach
     # 0      1    2   3    4     5      6       7      8      9
     #                                   0       1      2      3
@@ -437,9 +441,8 @@ def _subject(path, type=0):
 
         for p in posts:
             content = _content(board2id[board.lower()], p[0])
-            if content == "ERROR":
-                msg = r"错误的文章号,原文可能已经被删除"
-                page = page_404.replace("<!-->", msg)
+            if type(content) == str:
+                page = page_404.replace("<!-->", content)
                 return "", nav_common, page
             result = _content_html(content[6:], 2)
             page += "<li>%s</li>" % result
@@ -457,7 +460,7 @@ class iSubject(webapp.RequestHandler):
         navlink, navlink_bottom, page = _subject(self.request.path, 1)
         print_all(self, [navlink, page, navlink_bottom, tracking])
 
-def _post(path, type=0):
+def _post(path, rtype=0):
         paras = path.split('/')
         bid,id = paras[2],paras[3]
         if len(paras) == 5:
@@ -466,9 +469,8 @@ def _post(path, type=0):
             page = ""
 
         c = _content(bid, id, page)
-        if c == "ERROR":
-            msg = r"错误的文章号,原文可能已经被删除"
-            page = page_404.replace("<!-->", msg)
+        if type(c) == str:
+            page = page_404.replace("<!-->", c)
             return page, nav_common
 
         board, bid, id, gid, reid, title = c[:6]
@@ -487,7 +489,7 @@ class Post(webapp.RequestHandler):
 
 class iPost(webapp.RequestHandler):
     def get(self):
-        navlink, page = _post(self.request.path, type=1)
+        navlink, page = _post(self.request.path, 1)
         print_all(self, [navlink, page, tracking])
 
 class Test(webapp.RequestHandler):
