@@ -102,7 +102,7 @@ class Config(webapp.RequestHandler):
         if config:
             favorstext = ",".join(config.favorlist)
             chk_value = config.sort == "on" and "checked" or ""
-        html = """<h1>Favorites</h1><form action="/config/" method="post"><ul>
+        html = """<h1>Favorites</h1>""" + nav_common + """<form action="/config/" method="post"><ul>
 <li><textarea name="favors" id="favors" />%s</textarea></li>
 <li><label for="sort">Sort</label><input type="checkbox" name="sort" id="sort" checked="%s" /></li>
 <li><input type="submit" value="Save" /></li></ul>
