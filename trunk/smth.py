@@ -49,7 +49,7 @@ window.addEventListener('orientationchange', setOrientation, false);
 </head><body>""" % (DEBUG and "<script src='/static/jquery.js'></script>" or "")
 
 myFooter = tracking + """<div id="footer"></div><!--></body></html>"""
-copyright = """<div id="copyright"><a href="/smart/" class="about">smart</a><a href="http://code.google.com/p/himecc/" target="_blank" class="about">code</a><a href="/static/about.html" class="about">about</a><div>"""
+copyright = """<div id="copyright"><a href='/ipad/'>ipad</a><a href="/smart/">smart</a><a href="http://code.google.com/p/himecc/" target="_blank">code</a><a href="/static/about.html">about</a><div>"""
 ipadFooter = tracking + """</body></html>"""
 
 nav_common = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/' style='{width:66px}'>Home</a></h1>"
