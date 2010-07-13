@@ -14,6 +14,20 @@ from define import id2board, board2id, favor, favor2chs, Favor, top90_group
 import logging
 
 DEBUG = False
+tracking = """<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17431453-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>"""
+
 myHeader = """<html><head>
 <link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
 %s
@@ -30,13 +44,13 @@ function setOrientation() {
 
 window.addEventListener('load', setOrientation, false);
 window.addEventListener('orientationchange', setOrientation, false);
-
 </script>
+
 </head><body>""" % (DEBUG and "<script src='/static/jquery.js'></script>" or "")
 
-myFooter = """<div id="footer"></div><!--></body></html>"""
+myFooter = tracking + """<div id="footer"></div><!--></body></html>"""
 copyright = """<div id="copyright"><a href="/smart/" class="about">smart</a><a href="http://code.google.com/p/himecc/" target="_blank" class="about">code</a><a href="/static/about.html" class="about">about</a><div>"""
-ipadFooter = """</body></html>"""
+ipadFooter = tracking + """</body></html>"""
 
 nav_common = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/' style='{width:66px}'>Home</a></h1>"
 
@@ -269,7 +283,7 @@ class Board(webapp.RequestHandler):
 class iBoard(webapp.RequestHandler):
     def get(self):
         navlink_top, navlink, page = _board(self.request.path, 1)
-        print_all(self, [navlink_top, page, navlink])
+        print_all(self, [navlink_top, page, navlink, tracking])
 
 def filterText(s):
     telnet_ctrl = re.compile("[[0-9;]+m")
@@ -446,7 +460,7 @@ class Subject(webapp.RequestHandler):
 class iSubject(webapp.RequestHandler):
     def get(self):
         navlink, navlink_bottom, page = _subject(self.request.path, 1)
-        print_all(self, [navlink, page, navlink_bottom])
+        print_all(self, [navlink, page, navlink_bottom, tracking])
 
 def _post(path, type=0):
         paras = path.split('/')
@@ -479,7 +493,7 @@ class Post(webapp.RequestHandler):
 class iPost(webapp.RequestHandler):
     def get(self):
         navlink, page = _post(self.request.path, type=1)
-        print_all(self, [navlink, page])
+        print_all(self, [navlink, page, tracking])
 
 class Test(webapp.RequestHandler):
     def get(self):
