@@ -3,6 +3,8 @@ version: 1
 runtime: python
 api_version: 1
 
+default_expiration: "1d"
+
 handlers:
 
 - url: /
@@ -10,6 +12,7 @@ handlers:
 
 - url: /static
   static_dir: static
+  expiration: "12h"
 
 - url: /favicon.ico
   static_files: static/favicon.ico
