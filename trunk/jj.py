@@ -58,11 +58,11 @@ class Board(webapp.RequestHandler):
         curPage = int(pages.group(2))
 
         if curPage == 1:
-            navlink = "<h1 class='nav'><a href='/jj/' class='btnCenter' style='{width:66px}'>Home</a><a href='/jjboard/%s/2' class='btnRight'>2</a></h1>" % board;
+            navlink = "<h1 class='nav'><a href='/jj/' class='btnCenter' style='{width:66px}'>Home</a><a href='/jjboard/%s/2' class='btnRight0'>2</a></h1>" % board;
         else:
             nextPage = curPage + 1
             lastPage = curPage - 1
-            navlink = "<h1 class='nav'><a href='/jjboard/%s/%d' class='btnLeft'>%d</a><a href='/jj/' class='btnCenter' style='{width:66px}'>Home</a><a href='/jjboard/%s/%d' class='btnRight'>%d</a></h1>" % (board, lastPage, lastPage, board, nextPage, nextPage);
+            navlink = "<h1 class='nav'><a href='/jjboard/%s/%d' class='btnLeft0'>%d</a><a href='/jj/' class='btnCenter' style='{width:66px}'>Home</a><a href='/jjboard/%s/%d' class='btnRight0'>%d</a></h1>" % (board, lastPage, lastPage, board, nextPage, nextPage);
 
 
         self.response.headers['Content-Type'] = myContentType
@@ -118,12 +118,12 @@ class Subject(webapp.RequestHandler):
             curPage = int(p_total.group(2))
             if curPage == 1:
                 nextpage = "/jjsubject/" + board + "/" + id + "/" + "1"
-                navlink = "<h1 class='nav'>%s<a href='%s' class='btnRight'>2</a></h1>" % (boardLink, nextpage)
+                navlink = "<h1 class='nav'>%s<a href='%s' class='btnRight0'>2</a></h1>" % (boardLink, nextpage)
 
             else:
                 if curPage == totalPage:
                     lastnum = curPage - 1
-                    navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft'>%d</a>%s</h1>" % (lastnum, boardLink)
+                    navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>%d</a>%s</h1>" % (lastnum, boardLink)
                 else:
                     lastnum = curPage - 2
                     nextnum = curPage
@@ -132,9 +132,9 @@ class Subject(webapp.RequestHandler):
                     else:
                         lastPage = "/jjsubject/" + board + "/" + id + "/" + str(lastnum)
                     nextPage = "/jjsubject/" + board + "/" + id + "/" + str(nextnum)
-                    navlink = "<h1 class='nav'><a href='%s' class='btnLeft'>%s</a>%s<a href='%s' class='btnRight'>%s</a></h1>" % (lastPage, str(lastnum+1), boardLink, nextPage, str(nextnum+1))
+                    navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>%s</a>%s<a href='%s' class='btnRight0'>%s</a></h1>" % (lastPage, str(lastnum+1), boardLink, nextPage, str(nextnum+1))
         else:
-            navlink = "<h1 class='nav'><a name='top' href='javascript:history.go(-1)' class='btnLeft'>Back</a>%s</h1>" % boardLink
+            navlink = "<h1 class='nav'><a name='top' href='javascript:history.go(-1)' class='btnLeft0'>Back</a>%s</h1>" % boardLink
 
         p = re.compile("<td class=.read.>(.*?)</td>.*?<td>(.*?)</td>", re.MULTILINE|re.DOTALL)
         posts = re.findall(p, content)
