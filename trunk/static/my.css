@@ -109,19 +109,15 @@ form textarea {
     height: 80px;
 }
 
-form input[type=text] {
-    height: 60px;
-    width: 290px;
-    margin-left:10px;
-}
+#smartinput { width:100%; }
 
 form input[type=checkbox] {
     margin-left: 29px;
 }
 
 form input[type=submit] {
-    width: 200px;
-    height: 30px;
+    width: 100px;
+    height: 25px;
 }
 
 h2 {
@@ -213,6 +209,10 @@ li a {
 	padding: 3px;
 	text-decoration: none;
 	color:black;
+}
+
+.urlgo {
+    color: blue;
 }
 
 .threads li a:visited {
