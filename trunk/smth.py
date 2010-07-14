@@ -4,67 +4,16 @@
 # last-modified: 2010-07-12
 
 from google.appengine.ext import webapp 
-from google.appengine.ext.webapp.util import run_wsgi_app
-from google.appengine.api import urlfetch
 from google.appengine.api import images
 from google.appengine.ext import db
 from random import random
 import re 
 from define import id2board, board2id, favor, favor2chs, Favor, top90_group
+from common import *
+from util import *
 import logging
 
 DEBUG = False
-tracking = """<script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-17431453-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>"""
-#"<script src='/static/jquery.js'></script>
-myHeader = """<html><head>
-<link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
-<meta http-equiv="content-type" content="text/html; charset=utf-8"> 
-<meta name="viewport" content="width=device-width, user-scalable=no">
-<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />""" + tracking + """<script>
-function setOrientation() {
-  var orient = (window.innerWidth||320)==320?"portrait":"landscape";
-  var cl = document.body.className;
-  cl = cl.replace(/portrait|landscape/, orient);
-  document.body.className = cl;
-};
-
-window.addEventListener('load', setOrientation, false);
-window.addEventListener('orientationchange', setOrientation, false);
-</script>
-</head><body>"""
-
-myFooter = """<div id="footer"></div><!--></body></html>"""
-copyright = """<div id="copyright"><a href='/ipad/'>ipad</a><a href="/smart/">smart</a><a href="http://code.google.com/p/himecc/" target="_blank">code</a><a href="/static/about.html">about</a><div>"""
-ipadFooter = tracking + """</body></html>"""
-
-nav_common = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/' style='{width:66px}'>Home</a></h1>"
-
-page_404 = """<h1 class="error">Error</h1><ul><li><!--></li></ul>"""
-
-def fetch(url, payload=None, method=urlfetch.GET, headers={}, allow_truncated=False, follow_redirects=True, deadline=10):
-    return urlfetch.fetch(url, payload=payload, method=method, headers=headers, allow_truncated=True, follow_redirects=follow_redirects, deadline=deadline)
-
-def convertFromGB2312ToUTF8(onestr):
-    newstr = onestr
-    try:
-        newstr = unicode(newstr, 'cp936', 'ignore')
-    except:
-        pass
-    return newstr.encode('utf-8', 'ignore')
-
-def print_all(handler, li):
-    for line in li:
-        handler.response.out.write(line)
 
 from google.appengine.api import users
 def _login_info(request):
@@ -153,7 +102,7 @@ class MainPage(webapp.RequestHandler):
             else:
                 page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div></a></li>" % (b, b.upper()))
         page.append("</ul>")
-        print_all(self, [myHeader, head, navlink, "".join(page), myFooter.replace("<!-->", copyright)])
+        print_all(self, [myHeader, head, navlink, "".join(page), myFooter.replace("<!-->", copyright.replace("<!-->","<a href='/jj/'>jj</a><a href='/ipad/'>ipad</a>"))])
 
 
 def smartboard(b):
@@ -351,7 +300,7 @@ def _content_html(li, rtype):
             refer = "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'><br/>" + li[2] + "</span></a>"
         return "<span class='author'>%s</span>: <span style='margin:0px;padding:0px;'>%s" % (li[0], li[1]) + refer + li[3] + "</span>"
 
-def getContentHeji(bid, id):
+def _content_collection(bid, id):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s' % (bid, id))
     result = fetch(url)
     content = filterText(convertFromGB2312ToUTF8(result.content))
@@ -435,7 +384,7 @@ def _subject(path, rtype=0):
 
         #different handle SameSubject posts
         if t.group(1).find("合集") > 0:
-            result = getContentHeji(board2id[board.lower()], posts[0][0])
+            result = _content_collection(board2id[board.lower()], posts[0][0])
             page += result
             posts = posts[1:]
 
@@ -573,22 +522,4 @@ class iPad(webapp.RequestHandler):
         print_all(self, [ipadHeader, ipadBody, ipadFooter])
 
 
-application = webapp.WSGIApplication([('/',  MainPage),
-                                      ('/smth/.*',  MainPage),
-                                      ('/board/.*', Board),
-                                      ('/subject/.*', Subject),
-                                      ('/post/.*', Post),
-                                      ('/test/.*', Test),
-                                      ('/ipad/.*', iPad),
-                                      ('/ipost/.*', iPost),
-                                      ('/iboard/.*', iBoard),
-                                      ('/isubject/.*', iSubject),
-                                      ('/config/.*', Config),
-                                      ('/smart/.*', Smart),
-                                      ], debug=True)
 
-def main():
-    run_wsgi_app(application)
-
-if (__name__ == '__main__'):
-    main()
