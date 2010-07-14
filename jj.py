@@ -1,21 +1,23 @@
-# emacs-mode: -*- python-*-
-# -*- coding: cp936 -*-
+ï»¿# emacs-mode: -*- python-*-
+# -*- coding: utf-8 -*-
 
-from google.appengine.ext import webapp 
-from google.appengine.ext.webapp.util import run_wsgi_app 
-from google.appengine.api.urlfetch import fetch 
+from google.appengine.ext import webapp
+from util import fetch, print_all
+from common import tracking, page_404, copyright
 import re 
-#from define import id2board, board2id, favor
-favor = {"20": "Õ½É«ÄæÀÖÔ°", "3": "µ¢ÃÀÏĞÇé"}
-board2name = {"20": "Õ½É«ÄæÀÖÔ°", "3": "µ¢ÃÀÏĞÇé"}
+import logging
 
-myContentType = "text/html; charset='utf-8'"
-myHeader = """<html><header>
-<link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
+favor = {"20": "æˆ˜è‰²é€†ä¹å›­", "3": "è€½ç¾é—²æƒ…"}
+board2name = {"20": "æˆ˜è‰²é€†ä¹å›­", "3": "è€½ç¾é—²æƒ…"}
+
+myHeader = """<link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8"> 
 <meta name="viewport" content="width=device-width, user-scalable=no">
-<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
+<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
 </header><body>"""
-myFooter = """</body></html>"""
+myFooter = """<div id="footer"></div><!--></body></html>"""
+
+nav_common = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/jj/' style='{width:66px}'>Home</a></h1>"
 
 def toUTF8(onestr):
     newstr = onestr
@@ -28,14 +30,13 @@ def toUTF8(onestr):
 
 class MainPage(webapp.RequestHandler):
     def get(self):
-        self.response.headers['Content-Type'] = myContentType
-        self.response.out.write(myHeader)
-        self.response.out.write("<h1>%s</h1>" % toUTF8("½ú½­ÎÄÑ§³Ç"))
-        self.response.out.write('<ul class="boards">')
+        page = ["<h1>æ™‹æ±Ÿæ–‡å­¦åŸ</h1>"]
+        page.append('<ul class="boards">')
         for b in favor.items():
-            self.response.out.write("<li><a href='/jjboard/%s'>%s</a></li>" % (b[0], toUTF8(b[1])))
-        self.response.out.write("</ul>")
-        self.response.out.write(myFooter)
+            page.append("<li><a href='/jjboard/%s'>%s</a></li>" % (b[0], b[1]))
+        page.append("</ul>")
+
+        print_all(self, [myHeader,"\r\n".join(page), myFooter.replace("<!-->", copyright.replace("<!-->", "<a href='/'>smth</a>"))])
 
 
 class Board(webapp.RequestHandler):
@@ -58,16 +59,14 @@ class Board(webapp.RequestHandler):
         curPage = int(pages.group(2))
 
         if curPage == 1:
-            navlink = "<h1 class='nav'><a href='/jj/' class='btnCenter' style='{width:66px}'>Home</a><a href='/jjboard/%s/2' class='btnRight0'>2</a></h1>" % board;
+            navlink = "<h1 class='nav'><a href='/jj/' class=' btnCenter3 btnCenter' style='{width:66px}'>Home</a><a href='/jjboard/%s/2' class='btnRight0'>2</a></h1>" % board;
         else:
             nextPage = curPage + 1
             lastPage = curPage - 1
             navlink = "<h1 class='nav'><a href='/jjboard/%s/%d' class='btnLeft0'>%d</a><a href='/jj/' class='btnCenter' style='{width:66px}'>Home</a><a href='/jjboard/%s/%d' class='btnRight0'>%d</a></h1>" % (board, lastPage, lastPage, board, nextPage, nextPage);
 
-
-        self.response.headers['Content-Type'] = myContentType
         self.response.out.write(myHeader)
-        self.response.out.write("<h1>%s</h1>" % toUTF8(board2name[board]))
+        self.response.out.write("<h1>%s</h1>" % board2name[board])
 
         self.response.out.write(navlink)
         self.response.out.write("<ul class='threads'>")
@@ -77,42 +76,28 @@ class Board(webapp.RequestHandler):
         self.response.out.write(navlink)
         self.response.out.write(myFooter)
 
-
-def getContent(bid, id):
-    url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s' % (bid, id))
-    result = fetch(url)
-    content = convertFromGB2312ToUTF8(result.content)
-#    m = re.search(r"ç«™å†…(.*?)ã€", content, (re.MULTILINE | re.DOTALL))
-#    if not m:
-    au = re.search(r"\xe5\x8f\x91\xe4\xbf\xa1\xe4\xba\xba: (.*?),", content)
-    m = re.search(r"ç«™å†…(.*?)--", content, (re.MULTILINE | re.DOTALL))
-    if m:
-        s = re.sub(r"^(\\n)+", "", m.group(1).strip())
-        s = re.sub(r"(\\n)+", "<br />", s)
-#        s = m.group(1).replace(r"\n", "<br />")
-        inx = s.find("\xe3\x80\x90")
-        if inx:
-            s = s[:inx] + "<span style='color:grey'>" + s[inx:].replace(">>", ">") + "</span>"
-
-    return "<span class='author'>" + au.group(1) + "</span>: " + s #m.group(1)
-
-
-class Subject(webapp.RequestHandler):
-    def get(self):
-        paras = self.request.path.split('/')
+def _subject(path):
+        paras = path.split('/')
         board,id = paras[2],paras[3]
         if (len(paras) == 4):
             pagenum = ""
         else:
             pagenum = "&page=" + paras[4]
 
-        self.response.headers['Content-Type'] = myContentType
         url = 'http://bbs.jjwxc.net/showmsg.php?board=%s&id=%s%s' % (board, id, pagenum)
         result = fetch(url)
         content = toUTF8(result.content)
-        sub = re.search("\xe4\xb8\xbb\xe9\xa2\x98\xef\xbc\x9a(.*?)</td>", content).group(1)
-        p_total = re.search("\xe5\x85\xb1(\\d+)\xe9\xa1\xb5.*?<b>\[(\\d+)\]</b>", content)
-        boardLink = "<a class='btnCenter' href='/jjboard/%s' style='{width:%dpx}'>%s</a>" % (board, len(board2name[board])*8, toUTF8(board2name[board]))
+        if re.search(r"æœ¬è´´å·²ç»è¢«åˆ é™¤", content):
+            return page_404.replace("<!-->", r"æœ¬è´´å·²ç»è¢«åˆ é™¤")
+
+        try:
+            sub = re.search("ä¸»é¢˜ï¼š(.*?)</td>", content).group(1)
+        except AttributeError:
+            import traceback
+            return page_404.replace("<!-->", "<pre>%s</pre>" % traceback.format_exc())
+
+        boardLink = "<a class='btnCenter' href='/jjboard/%s' style='{width:%dpx}'>%s</a>" % (board, len(board2name[board])*8, board2name[board])
+        p_total = re.search("å…±(\d+)é¡µ.*?<b>\[(\\d+)\]</b>", content)
         if p_total:
             totalPage = int(p_total.group(1))
             curPage = int(p_total.group(2))
@@ -134,7 +119,7 @@ class Subject(webapp.RequestHandler):
                     nextPage = "/jjsubject/" + board + "/" + id + "/" + str(nextnum)
                     navlink = "<h1 class='nav'><a href='%s' class='btnLeft0'>%s</a>%s<a href='%s' class='btnRight0'>%s</a></h1>" % (lastPage, str(lastnum+1), boardLink, nextPage, str(nextnum+1))
         else:
-            navlink = "<h1 class='nav'><a name='top' href='javascript:history.go(-1)' class='btnLeft0'>Back</a>%s</h1>" % boardLink
+            navlink = "<h1 class='nav'><a name='top' href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink
 
         p = re.compile("<td class=.read.>(.*?)</td>.*?<td>(.*?)</td>", re.MULTILINE|re.DOTALL)
         posts = re.findall(p, content)
@@ -146,32 +131,14 @@ class Subject(webapp.RequestHandler):
         page += "</ul>"
         page = re.sub("</?font.*?>", "", page)
         page = re.sub("</?div.*?>", "", page)
-        self.response.out.write(myHeader)
-        self.response.out.write("<h1>%s</h1>" % sub)
-        self.response.out.write(navlink)
-        self.response.out.write(page)
-        self.response.out.write(navlink)
-        self.response.out.write(myFooter)
+        
+        return navlink, navlink, page
 
 
-class Post(webapp.RequestHandler):
+class Subject(webapp.RequestHandler):
     def get(self):
-        paras = self.request.path.split('/')
-        bid,id = paras[2],paras[3]
-        self.response.headers['Content-Type'] = myContentType
-        content = getContent(bid, id)
-        self.response.out.write(myHeader)
-        self.response.out.write(content)
-        self.response.out.write(myFooter)
-
-
-application = webapp.WSGIApplication([('/jj/.*',  MainPage),
-                                      ('/jjboard/.*', Board),
-                                      ('/jjsubject/.*', Subject),
-                                      ], debug=True)
-
-def main():
-    run_wsgi_app(application)
-
-if (__name__ == '__main__'):
-    main()
+        c = _subject(self.request.path)
+        if type(c) == str:
+            print_all(self, [myHeader, c, nav_common, myFooter])
+        else:
+            print_all(self, [myHeader, c[0], c[2], c[1], myFooter])

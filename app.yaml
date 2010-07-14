@@ -8,7 +8,7 @@ default_expiration: "1d"
 handlers:
 
 - url: /
-  script: smth.py
+  script: handler.py
 
 - url: /static
   static_dir: static
@@ -27,10 +27,10 @@ handlers:
   upload: static/favicon.png  
 
 - url: /(ipad|smth|board|subject|post|ipost|isubject|iboard|config|smart)/.*
-  script: smth.py
+  script: handler.py
 
 - url: /(jj|jjboard|jjsubject)/.*
-  script: jj.py
+  script: handler.py
 
 
 skip_files: |

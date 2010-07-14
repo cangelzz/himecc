@@ -1,5 +1,5 @@
-body {
-    font-family: helvetica;
+﻿body {
+    font-family: helvetica, Arial, "宋体";
 	margin: 0;
 	padding: 0;
 	background: #ebebeb;
@@ -293,6 +293,12 @@ li a.normal {
 {
     position:relative;
     left: -18px;
+}
+
+.btnCenter3
+{
+    position:relative;
+    left: 18px;
 }
 
 .btnCenterLeft
