@@ -1,5 +1,23 @@
 ﻿from google.appengine.ext import db
 
+
+jj_boards = [
+  ["置顶", ("20","战色逆乐园"),("3","耽美闲情")],
+  ["交流区",("40", "宠物情缘"),("16", "时尚·饕餮")],
+  ["惊悚悬疑区",("","")],
+  ["原创区",("","")],
+  ["耽美区",("","")],
+  ["同志区",("","")]
+]
+
+def _jjid(s):
+    for l1 in jj_boards:
+        for l2 in l1[1:]:
+            if s in l2:
+                return l2[1]
+    else:
+        return ""
+
 class Favor(db.Model):
     user = db.UserProperty()
     favorlist = db.ListProperty(str)

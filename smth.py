@@ -6,11 +6,13 @@
 from google.appengine.ext import webapp 
 from google.appengine.api import images
 from google.appengine.ext import db
+from google.appengine.runtime.apiproxy_errors import RequestTooLargeError
 from random import random
 import re 
-from define import id2board, board2id, favor, favor2chs, Favor, top90_group
+from define import board2id, favor, favor2chs, Favor, top90_group
 from common import *
 from util import *
+import base64
 import logging
 
 DEBUG = False
@@ -270,6 +272,9 @@ def _content(bid, id, page=""):
         
         atts = re.findall("attach\('(.*?)',\s(\d+),\s(\d+)\);", content)
         for att in atts:
+            if int(att[1]) > 1000000:
+                attpart = attpart + "<br><span style='color:crimson'>[TOO_LARGE_IMAGE]</span>"
+                continue
             fname = att[0]
             ext = fname[fname.find("."):]
             extL = ext.lower()
@@ -281,10 +286,14 @@ def _content(bid, id, page=""):
                     img.resize(300)
                 else:
                     img.resize(img.width)
-                resizedata = img.execute_transforms(images.JPEG)
-                import base64
-                base64data = base64.encodestring(resizedata)
-                attpart = attpart + "<br/><img src=\"data:image/jpeg;base64," + base64data + "\">"
+                try:
+                    resizedata = img.execute_transforms(images.JPEG)
+                    base64data = base64.encodestring(resizedata)
+                    attpart = attpart + "<br/><img src=\"data:image/jpeg;base64," + base64data + "\">"
+                except RequestTooLargeError: 
+                    attpart = attpart + "<br><span style='color:red'>[TOO_LARGE_IMAGE]</span>"
+                except Exception, err:
+                    attpart = attpart + "<br>%s" % err.message
     
     return list(ids) + [title, au, reply, refer, attpart]
     # board, bid, id, gid, reid, title, author, reply, refer, attach
@@ -334,15 +343,15 @@ def _subject(path, rtype=0):
         url = 'http://www.newsmth.net/bbstcon.php?board=%s&gid=%s%s' % (board, gid, pagenum)
         result = fetch(url)
         t = re.search("<title>.*?-.*?-(.*?)</title>", convertFromGB2312ToUTF8(result.content))
-        m = re.search("tconWriter.*?\\d+,\\d+,\\d+,(\\d+),(\\d+),", result.content)
+        m = re.search("tconWriter.*?,(\\d+),\\d+,\\d+,(\\d+),(\\d+),", result.content)
 
         if not m:
             msg = r"错误的文章号,原文可能已经被删除"
             page = page_404.replace("<!-->", msg)
             return "", nav_common, page
 
-        totalPage = int(m.group(1))
-        curPage = int(m.group(2))
+        totalPage = int(m.group(2))
+        curPage = int(m.group(3))
 
         def makejumplist(c, t, bname, gid):
             s = []
@@ -383,13 +392,14 @@ def _subject(path, rtype=0):
         page = "<ul class='posts'>"
 
         #different handle SameSubject posts
+        bid = m.group(1)
         if t.group(1).find("合集") > 0:
-            result = _content_collection(board2id[board.lower()], posts[0][0])
+            result = _content_collection(bid, posts[0][0])
             page += result
             posts = posts[1:]
 
         for p in posts:
-            content = _content(board2id[board.lower()], p[0])
+            content = _content(bid, p[0])
             if type(content) == str:
                 page = page_404.replace("<!-->", content)
                 return "", nav_common, page
@@ -448,46 +458,6 @@ class Test(webapp.RequestHandler):
         content = convertFromGB2312ToUTF8(result.content)
         self.response.out.write(myHeader)
         self.response.out.write(content)
-
-class Smart(webapp.RequestHandler):
-    html = """<h1>Smart Jump</h1><form action="/smart/" method="post">
-<h1 class="nav"><a class="btnCenter" href="/">Home</a></h1>
-<ul><!-->
-<li><label for="URL">URL</label></li><li><input type="text" name="URL" id="smartinput" /></li>
-<li><label for="redirect">Redirect</label><input type="checkbox" name="redirect" id="redirect" /></li>
-<li><input type="submit" value="Go" /></li>
-<li>Usage: copy the link here as examples below:<br>
-<pre>
-http://www.newsmth.net/bbstcon.php?board=MMJoke&gid=87303
-http://www.newsmth.net/bbscon.php?bid=458&id=1036275
-board=Apple&gid=122345
-board:Age,gid:3345667
-</pre></li>
-</ul>
-</form>"""
-
-    def get(self):
-        print_all(self, [myHeader, self.html, myFooter])
-
-    def post(self):
-        url = self.request.get("URL")
-        redirect = self.request.get("redirect") == "on" and True or False
-
-        urlgo =""
-        m = re.search("board.([\w\d_]+).gid.(\d+)", url)
-        if m: urlgo = "/subject/%s/%s" % m.groups()
-        m = re.search("bid.(\d+).id.(\d+)", url)
-        if m: urlgo = "/post/%s/%s" % m.groups()
-
-        if urlgo:
-            if redirect: self.redirect(urlgo)
-            else: 
-                page = self.html.replace("<!-->", "<li><a href='%s' target='_blank' class='urlgo'>Click: %s</a></li>" % (urlgo, urlgo))
-                print_all(self, [myHeader, page, myFooter])
-                return
-
-        msg = "<li>The URL: <span style='color:red'>%s</span> doesn't match any patter</li>" % url
-        print_all(self, [myHeader, self.html.replace("<!-->", msg), myFooter])
 
 ipadHeader = """<html><head>
 <link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
