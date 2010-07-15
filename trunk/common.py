@@ -12,9 +12,9 @@ tracking = """<script type="text/javascript">
   })();
 </script>"""
 #"<script src='/static/jquery.js'></script>
-myHeader = """<html><head>
+commonHeader = """<html><head>
 <link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
-<meta http-equiv="content-type" content="text/html; charset=utf-8"> 
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />""" + tracking + """<script>
 function setOrientation() {
@@ -26,13 +26,12 @@ function setOrientation() {
 
 window.addEventListener('load', setOrientation, false);
 window.addEventListener('orientationchange', setOrientation, false);
-</script>
-</head><body>"""
+</script> """
 
 myFooter = """<div id="footer"></div><!--></body></html>"""
 copyright = """<div id="copyright"><!--><a href="/smart/">smart</a><a href="http://code.google.com/p/himecc/" target="_blank">code</a><a href="/static/about.html">about</a><div>"""
 ipadFooter = tracking + """</body></html>"""
 
-nav_common = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/' style='{width:66px}'>Home</a></h1>"
+nav_common = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter0 left18' href='/' style='{width:66px}'>Home</a></h1>"
 
 page_404 = """<h1 class="error">Error</h1><ul><li><!--></li></ul>"""

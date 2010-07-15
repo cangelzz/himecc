@@ -17,6 +17,8 @@ import logging
 
 DEBUG = False
 
+myHeader = commonHeader + '<script src="/static/sort.js"></script>' + "</head><body>"
+
 from google.appengine.api import users
 def _login_info(request):
     def _nick(user):
@@ -139,6 +141,9 @@ def _board(path, rtype=0):
         # /board/type/page
         paras = path.split('/')
         board = paras[2]
+        if (len(paras) == 3):
+            paras.append("6")
+
         if (len(paras) == 4):
             isLast = True
             pagetogo = ""
@@ -150,7 +155,7 @@ def _board(path, rtype=0):
         if rtype == 1:
             navlink = ""
         else:
-            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/' style='{width:66px}'>Home</a></h1>"
+            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter0' href='/' style='{width:66px}'>Home</a></h1>"
         navlink_top = head + navlink
 
         if board == "top10":
@@ -165,18 +170,17 @@ def _board(path, rtype=0):
 
         board, oldboard = smartboard(board.lower())
         if board == "none":
-            navlink = '<h1 class="nav"><a href="javascript:history.go(-1)" class="btnCenter btnCenter2">Home</a></h1>'
-            page = "<li>Board <span style='color:red'>%s</span> doesn't exist</li>" % oldboard
-            return navlink, "", page
+            page = page_404.replace("<!-->", r"错误的讨论区；<span style='color:red'>%s0chexi09</span>" % oldboard)
+            return "", nav_common, page
 
         head = "<h1 id='boardh1'>%s</h1>" % board.upper()
 
         if paras[3] == "0":
             ftype = ""
-            boardlink = "<a class='btnCenter btnCenter2' href='/board/%s/6'>Subject</a>" % board
+            boardlink = "<a class='btnCenter0 left36' href='/board/%s/6'>Subject</a>" % board
         else:
             ftype =  "&ftype=" + paras[3]
-            boardlink = "<a class='btnCenter btnCenter2' href='/board/%s/0'>Normal</a>" % board
+            boardlink = "<a class='btnCenter0 left36' href='/board/%s/0'>Normal</a>" % board
 
         url = 'http://www.newsmth.net/bbsdoc.php?board=' + board + ftype + pagetogo
 
@@ -194,12 +198,12 @@ def _board(path, rtype=0):
         nextPage = "/".join(isLast and ["board", board, paras[3]] or ["board", board, paras[3], str(int(page) + 1)])
 
         if (isLast):
-            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a class='btnCenter btnCenter2' href='/' style='{width:66px}'>Home</a>%s</h1>" % (lastPage, boardlink)
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sort(\"threads_ul\")' class='btnCenterLeft'>◇</a><a class='btnCenter0 left36' href='/' style='{width:66px}'>Home</a>%s</h1>" % (lastPage, boardlink)
         else:
-            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a class='btnCenter' href='/' style='{width:66px}'>Home</a>%s<a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, boardlink, nextPage)
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sort(\"threads_ul\")' class='btnCenterLeft'>◇</a><a class='btnCenter0 left18' href='/' style='{width:66px}'>Home</a>%s<a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, boardlink.replace("left36","left18"), nextPage)
 
         navlink_top = head + navlink
-        page = ["<ul class='threads'>"]
+        page = ["<ul class='threads' id='threads_ul'>"]
 
         def _classname(mark, title, rtype):
             classes = []
@@ -223,12 +227,12 @@ def _board(path, rtype=0):
 
 class Board(webapp.RequestHandler):
     def get(self):
-        navlink_top, navlink, page = _board(self.request.path)
+        navlink_top, navlink, page = _board(self.request.path.rstrip("/"))
         print_all(self, [myHeader, navlink_top, page, navlink, myFooter])
 
 class iBoard(webapp.RequestHandler):
     def get(self):
-        navlink_top, navlink, page = _board(self.request.path, 1)
+        navlink_top, navlink, page = _board(self.request.path.rstrip("/"), 1)
         print_all(self, [navlink_top, page, navlink, tracking])
 
 def filterText(s):
@@ -250,7 +254,7 @@ def _content(bid, id, page=""):
     try:
         title = re.search(r"标  题: (.*?)\\n", content).group(1)
         ids = re.search(r"conWriter.*?'([\w\d]+)',\s(\d+),\s(\d+),\s(\d+),\s(\d+)", content).groups()
-        au = re.search(r"[发寄]信人: (.*?)[,\\n]", content).group(1) #search author
+        au = re.search(r"[发寄]信人: (.*?\)),?", content).group(1) #search author
         m = re.search(r"(来  源|, 站内).*?(\\n)+(.*?)(\\n)+--", content, (re.MULTILINE | re.DOTALL))  #search StationIn #fix zhannei in nickname
     except AttributeError:
         import traceback
@@ -363,10 +367,10 @@ def _subject(path, rtype=0):
                     s.append("<a href='/subject/%s/%s/%d'>%s</a>" % (bname, gid, i, i))
                 i = i + 1
             return "&nbsp;&nbsp;".join(s)
-        boardLink = "<a class='btnCenter' href='/board/%s/6' style='{width:%dpx}'>%s</a>" % (board, len(board)*8,board.upper())
+        boardLink = "<a href='javascript:sort(\"posts_ul\")' class='btnCenterLeft'>◇</a><a class='btnCenter0' href='/board/%s/6' style='{width:%dpx}'>%s</a>" % (board, len(board)*8,board.upper())
         if curPage == 1:
             if curPage == totalPage:
-                navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink.replace("btnCenter", "btnCenter btnCenter2")
+                navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink.replace("btnCenter0", "btnCenter0 left36")
                 navlink_bottom = navlink
             else:
                 nextPage = "/".join(["subject", board, gid, "2"])
@@ -375,8 +379,9 @@ def _subject(path, rtype=0):
         else:
             if curPage == totalPage:
                 lastnum = curPage - 1
-                navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>%d</a>%s<a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastnum, boardLink, makejumplist(curPage, totalPage, board, gid))
-                navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>%d</a>%s<a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastnum, boardLink)
+                lastPage = "/".join(["subject", board, gid, str(lastnum)])
+                navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>%d</a>%s<a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, lastnum, boardLink.replace("btnCenter0","btnCenter0 left18"), makejumplist(curPage, totalPage, board, gid))
+                navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>%d</a>%s<a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastnum, boardLink.replace("btnCenter0","btnCenter0 left18"))
             else:
                 lastnum = curPage - 1
                 nextnum = curPage + 1
@@ -389,7 +394,7 @@ def _subject(path, rtype=0):
         navlink_bottom = navlink_bottom.replace("snavtop", "snavbottom")
 
         posts = re.findall('''\[(\d+),'(.*?)'\]''', result.content)
-        page = "<ul class='posts'>"
+        page = "<ul class='posts' id='posts_ul'>"
 
         #different handle SameSubject posts
         bid = m.group(1)
@@ -411,12 +416,12 @@ def _subject(path, rtype=0):
 
 class Subject(webapp.RequestHandler):
     def get(self):
-        navlink, navlink_bottom, page = _subject(self.request.path)
+        navlink, navlink_bottom, page = _subject(self.request.path.rstrip("/"))
         print_all(self, [myHeader, navlink, page, navlink_bottom, myFooter])
 
 class iSubject(webapp.RequestHandler):
     def get(self):
-        navlink, navlink_bottom, page = _subject(self.request.path, 1)
+        navlink, navlink_bottom, page = _subject(self.request.path.rstrip("/"), 1)
         print_all(self, [navlink, page, navlink_bottom, tracking])
 
 def _post(path, rtype=0):
@@ -438,7 +443,7 @@ def _post(path, rtype=0):
         firstPost = "/".join(["post", bid, gid])
         expandPost = "/".join(["subject", board, gid])
         boardlink = "/".join(["board", board, "0"])
-        navlink = "<h1>%s</h1>" %title + "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenterLeft'>1</a><a href='/%s' class='btnCenterLeft'>+</a><a href='/%s' class='btnCenter btnCenter2'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
+        navlink = "<h1>%s</h1>" %title + "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenterLeft'>1</a><a href='/%s' class='btnCenterLeft'>+</a><a href='/%s' class='btnCenter0 btnCenter2'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
         return navlink, "<ul class='posts'><li>" + _content_html(c[6:], 1) + "</li></ul>"
 
 class Post(webapp.RequestHandler):
