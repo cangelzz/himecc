@@ -264,7 +264,7 @@ li a.normal {
 }
 
 
-.btnCenter	
+.btnCenter0
 {	
 	display: inline-block;		    
 	height: 25px;
@@ -299,6 +299,16 @@ li a.normal {
 {
     position:relative;
     left: 18px;
+}
+
+.left36 {
+    position:relative;
+    left: -36px;
+}
+
+.left18 {
+    position:relative;
+    left: -18px;
 }
 
 .btnCenterLeft
