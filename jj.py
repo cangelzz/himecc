@@ -80,11 +80,14 @@ class Board(webapp.RequestHandler):
 
 def _subject(path):
         paras = path.split('/')
-        board,id = paras[2],paras[3]
-        if (len(paras) == 4):
-            pagenum = ""
-        else:
-            pagenum = "&page=" + paras[4]
+        try:
+            board,id = paras[2],paras[3]
+            if (len(paras) == 4):
+                pagenum = ""
+            else:
+                pagenum = "&page=" + paras[4]
+        except IndexError:
+            return page_404.replace("<!-->", r"路径参数错误；<span style='color:red'>%s</span>" % path)
 
         url = 'http://bbs.jjwxc.net/showmsg.php?board=%s&id=%s%s' % (board, id, pagenum)
         try: 

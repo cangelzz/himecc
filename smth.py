@@ -140,16 +140,20 @@ def _board(path, rtype=0):
         #  2     3    4
         # /board/type/page
         paras = path.split('/')
-        board = paras[2]
-        if (len(paras) == 3):
-            paras.append("6")
+        try:
+            board = paras[2]
+            if (len(paras) == 3):
+                paras.append("6")
 
-        if (len(paras) == 4):
-            isLast = True
-            pagetogo = ""
-        else:
-            isLast = False
-            pagetogo = "&page=" + paras[4]
+            if (len(paras) == 4):
+                isLast = True
+                pagetogo = ""
+            else:
+                isLast = False
+                pagetogo = "&page=" + paras[4]
+        except IndexError:
+            page = page_404.replace("<!-->", r"路径参数错误；<span style='color:red'>%s</span>" % path)
+            return "", nav_common, page
 
         head = "<h1 id='boardh1'>%s</h1>" % board.upper()
         if rtype == 1:
@@ -170,7 +174,7 @@ def _board(path, rtype=0):
 
         board, oldboard = smartboard(board.lower())
         if board == "none":
-            page = page_404.replace("<!-->", r"错误的讨论区；<span style='color:red'>%s0chexi09</span>" % oldboard)
+            page = page_404.replace("<!-->", r"错误的讨论区；<span style='color:red'>%s</span>" % oldboard)
             return "", nav_common, page
 
         head = "<h1 id='boardh1'>%s</h1>" % board.upper()
@@ -338,11 +342,15 @@ def _content_collection(bid, id):
 
 def _subject(path, rtype=0):
         paras = path.split('/')
-        board,gid = paras[2],paras[3]
-        if (len(paras) == 4):
-            pagenum = ""
-        else:
-            pagenum = "&start=" + gid + "&pno=" + paras[4]
+        try:
+            board,gid = paras[2],paras[3]
+            if (len(paras) == 4):
+                pagenum = ""
+            else:
+                pagenum = "&start=" + gid + "&pno=" + paras[4]
+        except IndexError:
+            page = page_404.replace("<!-->", r"路径参数错误；<span style='color:red'>%s</span>" % path)
+            return "", nav_common, page
 
         url = 'http://www.newsmth.net/bbstcon.php?board=%s&gid=%s%s' % (board, gid, pagenum)
         result = fetch(url)
@@ -426,11 +434,15 @@ class iSubject(webapp.RequestHandler):
 
 def _post(path, rtype=0):
         paras = path.split('/')
-        bid,id = paras[2],paras[3]
-        if len(paras) == 5:
-            page = "&p=" + paras[4]
-        else:
-            page = ""
+        try:
+            bid,id = paras[2],paras[3]
+            if len(paras) == 5:
+                page = "&p=" + paras[4]
+            else:
+                page = ""
+        except IndexError:
+            page = page_404.replace("<!-->", r"路径参数错误；<span style='color:red'>%s</span>" % path)
+            return "", nav_common, page
 
         c = _content(bid, id, page)
         if type(c) == str:
