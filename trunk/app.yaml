@@ -26,10 +26,10 @@ handlers:
   static_files: static/favicon.png
   upload: static/favicon.png  
 
-- url: /(ipad|smth|board|subject|post|ipost|isubject|iboard|config|smart)/.*
+- url: /(ipad|smth|board|subject|post|ipost|isubject|iboard|config|smart)/?.*
   script: handler.py
 
-- url: /(jj|jjboard|jjsubject|jjcomment)/.*
+- url: /(jj|jjboard|jjsubject|jjcomment)/?.*
   script: handler.py
 
 - url: /.*

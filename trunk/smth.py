@@ -7,6 +7,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import images
 from google.appengine.ext import db
 from google.appengine.runtime.apiproxy_errors import RequestTooLargeError
+from google.appengine.api.urlfetch_errors import *
 from random import random
 import re 
 from define import board2id, favor, favor2chs, Favor, top90_group
@@ -251,7 +252,10 @@ def filterText(s):
 
 def _content(bid, id, page=""):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s%s' % (bid, id, page))
-    result = fetch(url)
+    try:
+        result = fetch(url)
+    except DownloadError:
+        return "Download error: <span style='red'>%s</span>" % url
     content = filterText(convertFromGB2312ToUTF8(result.content))
     if re.search(r"<title>发生错误</title>", content):
         return r"错误的文章号,原文可能已经被删除"
