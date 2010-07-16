@@ -5,6 +5,8 @@ from common import *
 from util import print_all
 import re
 
+myHeader = commonHeader + "</head><body>"
+
 class Smart(webapp.RequestHandler):
     html = """<h1>Smart Jump</h1><form action="/smart/" method="post">
 <h1 class="nav"><a class="btnCenter" href="/">Home</a></h1>
