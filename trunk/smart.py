@@ -9,7 +9,7 @@ myHeader = commonHeader + "</head><body>"
 
 class Smart(webapp.RequestHandler):
     html = """<h1>Smart Jump</h1><form action="/smart/" method="post">
-<h1 class="nav"><a class="btnCenter" href="/">Home</a></h1>
+<h1 class="nav"><a class="btnCenter0" href="/">Home</a></h1>
 <ul><!-->
 <li><label for="URL">URL</label></li><li><input type="text" name="URL" id="smartinput" /></li>
 <li><label for="redirect">Redirect</label><input type="checkbox" name="redirect" id="redirect" /></li>
