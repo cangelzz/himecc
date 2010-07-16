@@ -29,7 +29,7 @@ handlers:
 - url: /(ipad|smth|board|subject|post|ipost|isubject|iboard|config|smart)/.*
   script: handler.py
 
-- url: /(jj|jjboard|jjsubject)/.*
+- url: /(jj|jjboard|jjsubject|jjcomment)/.*
   script: handler.py
 
 

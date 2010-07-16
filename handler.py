@@ -20,6 +20,7 @@ application = webapp.WSGIApplication([('/',  smth.MainPage),
                                       ('/jj/.*',  jj.MainPage),
                                       ('/jjboard/.*', jj.Board),
                                       ('/jjsubject/.*', jj.Subject),
+                                      ('/jjcomment/', jj.Comment),
                                       ], debug=True)
 
 def main():
