@@ -32,6 +32,9 @@ handlers:
 - url: /(jj|jjboard|jjsubject|jjcomment)/.*
   script: handler.py
 
+- url: /.*
+  static_files: static/404.html
+  upload: static/404.html
 
 skip_files: |
  ^(.*/)?(
