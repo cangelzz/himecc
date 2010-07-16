@@ -466,12 +466,13 @@ class Test(webapp.RequestHandler):
 
 ipadHeader = """<html><head>
 <link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, user-scalable=no">
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
 <script src="/static/jquery.js"></script>
 <script src="/static/jScrollTouch.js"></script>
 <script src="/static/ipad.js"></script>
-</head><body class="webkit">"""
+<script src="/static/sort.js"></script>""" + tracking + """</head><body class="webkit">"""
 
 def makenav():
     s = []

@@ -30,7 +30,7 @@ window.addEventListener('orientationchange', setOrientation, false);
 
 myFooter = """<div id="footer"></div><!--></body></html>"""
 copyright = """<div id="copyright"><!--><a href="/smart/">smart</a><a href="http://code.google.com/p/himecc/" target="_blank">code</a><a href="/static/about.html">about</a><div>"""
-ipadFooter = tracking + """</body></html>"""
+ipadFooter = """</body></html>"""
 
 nav_common = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter0 left18' href='/' style='{width:66px}'>Home</a></h1>"
 
