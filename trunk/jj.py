@@ -54,8 +54,11 @@ def _board(path):
         p =re.compile("href=\"(show.*?)id=(\\d+).*?\".*?>(.*?)&nbsp.*?<td>&nbsp;(.*?)</td>", re.MULTILINE|re.DOTALL)
         posts = re.findall(p, content)
         pages = re.search("<font color=.#FF0000.>(\\d+)</font>.*?<font color=.#FF0000.>(\\d+)</font>", content)
-        totalPage = int(pages.group(1))
-        curPage = int(pages.group(2))
+        try:
+            totalPage = int(pages.group(1))
+            curPage = int(pages.group(2))
+        except AttributeError:
+            return page_404.replace("<!-->", r"非正常错误；<pre>%s\r\n%s</pre>" % (traceback.format_exc(), content))
 
         if curPage == 1:
             navlink = "<h1 class='nav'><a class='btnLeft0' href='javascript:history.go(-1)'>&lt;</a><a href='/jj/' class=' btnCenter3 btnCenter0' style='{width:66px}'>Home</a><a href='/jjboard/%s/2' class='btnRight0'>2</a></h1>" % board;
@@ -76,7 +79,10 @@ def _board(path):
 class Board(webapp.RequestHandler):
     def get(self):
         c = _board(self.request.path)
-        print_all(self, [myHeader, c[0], c[2], c[1], myFooter])
+        if type(c) == str:
+            print_all(self, [myHeader, c, nav_common, myFooter])
+        else:
+            print_all(self, [myHeader, c[0], c[2], c[1], myFooter])
 
 def _subject(path):
         paras = path.split('/')
