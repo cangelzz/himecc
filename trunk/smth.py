@@ -21,7 +21,7 @@ DEBUG = False
 myHeader = commonHeader + '<script src="/static/sort.js"></script>' + "</head><body>"
 
 from google.appengine.api import users
-def _login_info(request):
+def _login_info(request, device=None):
     def _nick(user):
         nick = user.nickname()
         inx = nick.find("@")
@@ -29,11 +29,18 @@ def _login_info(request):
     user = users.get_current_user()
     if user:
         url = users.create_logout_url(request.path)
-        html = ", %s<a class='login' href='%s'>Out</a><a class='login' href='/config/'>C</a>" % (_nick(user), url)
+        if device == "ipad":
+            html = "<a class='login' href='/config/ipad/'>Config</a><a class='login' href='%s'>Logoff</a>" % url
+        else:
+            html = ", %s<a class='login' href='%s'>Out</a><a class='login' href='/config/'>C</a>" % (_nick(user), url)
     else:
         url = users.create_login_url(request.path)
-        html = ", Guest<a class='login' href='%s'>In</a>" % url
-
+        if device == "ipad":
+            html = "<a class='login' href='%s'>In</a>" % url
+        else:
+            html = ", Guest<a class='login' href='%s'>In</a>" % url
+    
+    if device == "ipad": return html[html.find("<"):].replace("/config/", "/config/ipad/")
     return html
 
 def _user(email="anonymous@gmail.com"):
@@ -44,6 +51,8 @@ def _user(email="anonymous@gmail.com"):
     
 class Config(webapp.RequestHandler):
     def get(self):
+        if self.request.path.find("ipad") == -1: addpath = "ipad/"
+        else: addpath = ""
         user = users.get_current_user()
         config = db.GqlQuery("SELECT * FROM Favor WHERE user=:1", user).get()
         favorstext = ""
@@ -51,17 +60,19 @@ class Config(webapp.RequestHandler):
         if config:
             favorstext = ",".join(config.favorlist)
             chk_value = config.sort == "on" and "checked" or ""
-        html = """<h1>Favorites</h1>""" + nav_common + """<form action="/config/" method="post"><ul>
+        html = """<h1>Favorites</h1>""" + nav_common + """<form action="/config/%s" method="post"><ul>
 <li><textarea name="favors" id="favors" />%s</textarea></li>
 <li><label for="sort">Sort</label><input type="checkbox" name="sort" id="sort" checked="%s" /></li>
 <li><input type="submit" value="Save" /></li></ul>
 </form>
-""" % (favorstext, chk_value)
+""" % (addpath, favorstext, chk_value)
 
         print_all(self, [myHeader, html, myFooter])
 
     def post(self):
         user = users.get_current_user()
+        if self.request.path.find("ipad") == -1: addpath = "ipad/"
+        else: addpath = ""
         if not user:
             self.redirect("/")
         else:
@@ -74,7 +85,7 @@ class Config(webapp.RequestHandler):
             else:
                 config = Favor(user=user, favorlist=favors, sort=sort)
             config.put()
-            self.redirect("/")
+            self.redirect("/" + addpath)
                 
 
 def _favor():
@@ -490,28 +501,28 @@ ipadHeader = """<html><head>
 <script src="/static/ipad.js"></script>
 <script src="/static/sort.js"></script>""" + tracking + """</head><body class="webkit">"""
 
-def makenav():
+def makenav(favorlist):
     s = []
-    for b in favor:
+    for b in favorlist:
         s.append("<a class='hBoard' href=\"javascript:loadBoard('/iboard/%s/6')\">%s</a>" % (b, b.upper()))
     return "<span style='color:gray;'>|</span>".join(s)
-    #return " ".join(favor)
 
 ipadBody = """
-<div id="navboard"><div class="navleft"><a href="javascript:nav2left()">&lt;</a></div><div id="navcon">%s</div><div class="navright"><a href="javascript:nav2right()">&gt;</a></div></div>
+<div id="navboard"><div class="navleft"><a href="javascript:nav2left()">&lt;</a></div><div id="navcon"><!--B></div><div class="navright"><a href="javascript:nav2right()">&gt;</a></div><div class="navright"><a href="javascript:$('#toolbox').toggle()">+</a></div></div>
 <div id="progress" style="display:none"><span>loading ...</span></div>
 <div id="main">
 
   <div id="divThreads"></div>
   <div id="divPosts"></div>
-
 </div>
-""" % makenav()
+<div id="toolbox"><!--T></div>"""
 
+ipadJump = """<h1 class="navjump"><input id='boardtogo' type="text" /><a href="javascript:loadBoard('/board/'+$('#boardtogo').val()+'/6')" class='btnGo'>Go</a></h1>"""
 
 class iPad(webapp.RequestHandler):
     def get(self):
-        print_all(self, [ipadHeader, ipadBody, ipadFooter])
-
-
-
+        default, favorlist = _favor()
+        body = ipadBody.replace("<!--B>", makenav(["top10","top90"] + favorlist))
+        loginhtml = "<div id='ipadcon'>" + _login_info(self.request, "ipad") + "</div>"
+        toolhtml = ipadJump + loginhtml
+        print_all(self, [ipadHeader, body.replace("<!--T>", toolhtml), ipadFooter])

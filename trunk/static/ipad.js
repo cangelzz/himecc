@@ -35,7 +35,7 @@ $(document).ready(function(){
     
     });
     
-    $("#navcon").css("width", $(window).width() - 60);
+    $("#navcon").css("width", $(window).width() - 90);
     $("#main").css("height", $(window).height()-$("#navboard").height());
     if (navigator.userAgent.match(/Chrome/i)) return;
     $("#divThreads").jScrollTouch();
