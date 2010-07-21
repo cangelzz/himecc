@@ -78,6 +78,7 @@ favor2chs = {
 'familylife' : "家庭生活",
 'food' : "我爱吃，我想吃",
 'google' : "谷歌",
+'gentleman': "绅士品味",
 'itexpress' : "IT业界特快",
 'joke' : "笑话连篇",
 'love' : "谈情说爱",
