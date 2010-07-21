@@ -46,6 +46,11 @@ function bind_a() {
             this.href = "javascript:loadSmart('" + url + "')";
     
             $(this).bind('click', function () {
+                if ($(this).hasClass("hBoard")) {
+                    $(this).siblings().css("background", "");
+                    $(this).css("background", "#0099FF");
+                }            
+
                 if (_gaq) {
                     _gaq._getAsyncTracker()._trackPageview(url);
                 }
