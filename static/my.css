@@ -24,15 +24,15 @@ h1 {
 	background: #32598b;
 }
 
-h1 a.login {
-    display:block;
+a.login {
+    display:inline-block;
     float:right;
     font-size: 12px;
     margin:0 2;
     padding:2 4;
     text-decoration:none;
     color:white;
-    width: 30px;
+    min-width: 30px;
     background: #3366CC;
 }
 
@@ -523,9 +523,32 @@ li a.normal {
 .navright a {
     display:block;
 }
+
+#toolbox {
+    position:absolute;
+    z-index: 50;
+    right: 0px;
+    top: 19px;
+    background: #C2CFF1;
+    display:none;
+    padding-left: 8px;
+    padding-top: 8px;
+    padding-right: 0px;
+    padding-bottom:8px;
+}
 #main {
     width:100%;
     position:absolute;
+}
+
+#ipadcon {
+    padding-top:8px;
+    text-align: center;
+}
+
+#ipadcon a {
+    float: none !important;
+
 }
 
 #divThreads {
