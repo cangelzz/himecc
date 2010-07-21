@@ -36,6 +36,7 @@ favor = [
 'dslr',
 'familylife',
 'food',
+'gentleman',
 'google',
 'itexpress',
 'joke',

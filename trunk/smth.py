@@ -36,7 +36,7 @@ def _login_info(request, device=None):
     else:
         url = users.create_login_url(request.path)
         if device == "ipad":
-            html = "<a class='login' href='%s'>In</a>" % url
+            html = "<a class='login' href='%s'>Login</a>" % url
         else:
             html = ", Guest<a class='login' href='%s'>In</a>" % url
     
@@ -249,7 +249,7 @@ class Board(webapp.RequestHandler):
 class iBoard(webapp.RequestHandler):
     def get(self):
         navlink_top, navlink, page = _board(self.request.path.rstrip("/"), 1)
-        print_all(self, [navlink_top, page, navlink, tracking])
+        print_all(self, [navlink_top, page, navlink])
 
 def filterText(s):
     telnet_ctrl = re.compile("[[0-9;]+m")
@@ -445,7 +445,7 @@ class Subject(webapp.RequestHandler):
 class iSubject(webapp.RequestHandler):
     def get(self):
         navlink, navlink_bottom, page = _subject(self.request.path.rstrip("/"), 1)
-        print_all(self, [navlink, page, navlink_bottom, tracking])
+        print_all(self, [navlink, page, navlink_bottom])
 
 def _post(path, rtype=0):
         paras = path.split('/')
@@ -481,7 +481,7 @@ class Post(webapp.RequestHandler):
 class iPost(webapp.RequestHandler):
     def get(self):
         navlink, page = _post(self.request.path, 1)
-        print_all(self, [navlink, page, tracking])
+        print_all(self, [navlink, page])
 
 class Test(webapp.RequestHandler):
     def get(self):
@@ -504,7 +504,7 @@ ipadHeader = """<html><head>
 def makenav(favorlist):
     s = []
     for b in favorlist:
-        s.append("<a class='hBoard' href=\"javascript:loadBoard('/iboard/%s/6')\">%s</a>" % (b, b.upper()))
+        s.append("<a class='hBoard' href=\"/board/%s/6\">%s</a>" % (b, b.upper()))
     return "<span style='color:gray;'>|</span>".join(s)
 
 ipadBody = """
