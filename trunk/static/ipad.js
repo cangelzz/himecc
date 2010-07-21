@@ -46,7 +46,9 @@ function bind_a() {
             this.href = "javascript:loadSmart('" + url + "')";
     
             $(this).bind('click', function () {
-                _gaq._getAsyncTracker()._trackPageview(url);
+                if (_gaq) {
+                    _gaq._getAsyncTracker()._trackPageview(url);
+                }
             });
         }
     });
