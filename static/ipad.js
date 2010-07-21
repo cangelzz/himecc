@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    bind_a();
+
     $(".hBoard").click(function(){
         $(this).siblings().css("background", "");
         $(this).css("background", "#0099FF");
@@ -14,17 +16,7 @@ $(document).ready(function(){
         $("div#divPosts h1 a.btnCenter").remove();
         $("#boardh1").remove();
 
-        $("a").each(function(){
-            var url = this.href;
-            if (this.pathname == "/") $(this).remove();
-            if (url.match(/history.go/)) $(this).remove();
-            if (url.match(/javascript/)) return;
-            if (url.match(/(board|subject|post)/))
-            {
-                url = url.replace("board", "iboard").replace("subject","isubject").replace("post","ipost");
-                this.href = "javascript:loadSmart('" + url + "')";
-            }
-        });
+        bind_a();
 
         if ($('#snavbottom').length > 0) {
             if ($('#snavbottom').position().top < $('#divPosts').height() || $("#snavtop:first-child").length == 0) {
@@ -41,6 +33,24 @@ $(document).ready(function(){
     $("#divThreads").jScrollTouch();
     $("#divPosts").jScrollTouch();
 });
+
+function bind_a() {
+    $("a").each(function(){
+        var url = this.href;
+        if (this.pathname == "/") $(this).remove();
+        if (url.match(/history.go/)) $(this).remove();
+        if (url.match(/javascript/)) return;
+        if (url.match(/(board|subject|post)/))
+        {
+            url = url.replace("board", "iboard").replace("subject","isubject").replace("post","ipost");
+            this.href = "javascript:loadSmart('" + url + "')";
+    
+            $(this).bind('click', function () {
+                _gaq._getAsyncTracker()._trackPageview(url);
+            });
+        }
+    });
+}
 
 function loadSmart(path) {
     if (path.match(/iboard/)) loadBoard(path);
