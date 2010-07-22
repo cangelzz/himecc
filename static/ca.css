@@ -21,7 +21,7 @@ h1 {
 	text-align: center;
 	margin: 0;
 	padding: 3;
-	background: #32598b;
+	background: #0064af;
     min-height:25px;
 }
 
@@ -92,7 +92,7 @@ div.floatright
 }
 
 .nav{
-    background: #b2d281;
+    background: #00694b;
     text-align: center;
     min-height:25px;
 }
@@ -103,7 +103,7 @@ div.floatright
 }
 
 .navjump{
-    background: #b2d281;
+    background: #00694b;
     text-align: left;
 }
 
@@ -480,7 +480,7 @@ li a.normal {
 .webkit{overflow:visible}
 
 #navboard {
-    background: #C2CFF1;
+    background: #444444;
     height:19px;
     font-size:17px;
     overflow:hidden;
@@ -499,7 +499,9 @@ li a.normal {
     padding:0 2;
 }
 
-#navboard a {text-decoration:none;}
+#navboard a {text-decoration:none;
+        color: white;
+}
 
 .navleft {
     float:left;
@@ -507,7 +509,7 @@ li a.normal {
     display:inline-block;
     text-align:center;
     text-decoration:none;
-    background: #0099FF;
+    background: #cd003c;
 }
 
 .navleft a {
@@ -519,7 +521,7 @@ li a.normal {
     display:inline-block;
     text-align:center;
     text-decoration:none;
-    background: #0099FF;
+    background: #cd003c;
 }
 .navright a {
     display:block;
@@ -530,7 +532,7 @@ li a.normal {
     z-index: 50;
     right: 0px;
     top: 19px;
-    background: #C2CFF1;
+    background: #444444;
     display:none;
     padding-left: 8px;
     padding-top: 8px;
