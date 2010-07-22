@@ -61,7 +61,7 @@ def _board(path):
             return page_404.replace("<!-->", r"非正常错误；<pre>%s\r\n%s</pre>" % (traceback.format_exc(), content))
 
         if curPage == 1:
-            navlink = "<h1 class='nav'><a class='btnLeft0' href='javascript:history.go(-1)'>&lt;</a><a href='/jj/' class=' btnCenter3 btnCenter0' style='{width:66px}'>Home</a><a href='/jjboard/%s/2' class='btnRight0'>2</a></h1>" % board;
+            navlink = "<h1 class='nav'><a class='btnLeft0' href='javascript:history.go(-1)'>&lt;</a><a href='/jj/' class='btnCenter0' style='{width:66px}'>Home</a><a href='/jjboard/%s/2' class='btnRight0'>2</a></h1>" % board;
         else:
             nextPage = curPage + 1
             lastPage = curPage - 1
