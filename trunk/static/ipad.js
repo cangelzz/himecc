@@ -1,10 +1,6 @@
 $(document).ready(function(){
+ 
     bind_a();
-
-    $(".hBoard").click(function(){
-        $(this).siblings().css({"background": "", "color": "","text-shadow":""});
-        $(this).css({"background": "#0099FF", "color": "white","text-shadow":"gray 0px 1px 1px;"});
-    }); 
 
     $('#progress').ajaxStart(function() {
         $(this).show();
@@ -47,8 +43,8 @@ function bind_a() {
     
             $(this).bind('click', function () {
                 if ($(this).hasClass("hBoard")) {
-                    $(this).siblings().css("background", "");
-                    $(this).css("background", "#0099FF");
+                    $(this).siblings().css({"background": "", "color": "","text-shadow":""});
+                    $(this).css({"background": "#0099FF", "color": "white","text-shadow":"gray 0px 1px 1px;"});
                 }            
 
                 if (_gaq) {
