@@ -303,7 +303,11 @@ def _content(bid, id, page=""):
             extL = ext.lower()
             if extL == ".jpg" or extL == ".jpeg" or extL == ".bmp" or extL == ".png" or extL == ".gif":
                 att_url = "http://att.newsmth.net/att.php?n.%s.%s.%s" % (bid, id, att[2]) + ext
-                bindata = fetch(url=att_url, method=urlfetch.GET, deadline=10).content
+                try:
+                    bindata = fetch(url=att_url, method=urlfetch.GET, deadline=10).content
+                except DownloadError:
+                    attpart = attpart + "<br><span style='color:red'>[DOWNLOAD_ERROR]</span>"
+                    continue
                 img = images.Image(bindata)
                 if img.width > 300:
                     img.resize(300)
