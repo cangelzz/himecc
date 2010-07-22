@@ -41,13 +41,17 @@ class MainPage(webapp.RequestHandler):
 
 def _board(path):
         paras = path.split('/')
-        board = paras[2]
-        if (len(paras) == 3):
-            isLast = True
-            pagetogo = ""
-        else:
-            isLast = False
-            pagetogo = "&page=" + paras[3]
+        try:
+            board = paras[2]
+            if (len(paras) == 3):
+                isLast = True
+                pagetogo = ""
+            else:
+                isLast = False
+                pagetogo = "&page=" + paras[3]
+        except IndexError:
+            return page_404.replace("<!-->", r"路径参数错误；<span style='color:red'>%s</span>" % path)
+
         url = "http://bbs.jjwxc.net/board.php?board=" + board + "&page=" + pagetogo
         result = fetch(url)
         content = toUTF8(result.content)
