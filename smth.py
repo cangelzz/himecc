@@ -137,7 +137,10 @@ def _rss(category, idx=None):
         url = "http://www.newsmth.net/rssi.php?h=2&s=%d" % idx
         page.append("<li class='group'>"+ category +"</li>")
 
-    result = fetch(url)
+    try:
+        result = fetch(url)
+    except DownloadError:
+        return "Download error: <span style='red'>%s</span>" % url
     content = result.content
     bname_and_id = re.findall("<link>.*?(?<=board=)(\w+).*?gid=(\d+)", content)
     title_and_author =  re.findall("<description>.*?:\s(.*?),.*?<br/>.*?:\s(.*?)<br/>",content)
@@ -338,7 +341,10 @@ def _content_html(li, rtype):
 
 def _content_collection(bid, id):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s' % (bid, id))
-    result = fetch(url)
+    try:
+        result = fetch(url)
+    except DownloadError:
+        return "Download error: <span style='red'>%s</span>" % url
     content = filterText(convertFromGB2312ToUTF8(result.content))
     m = re.search(r"站内(.*)o.h\(0\)", content, (re.MULTILINE | re.DOTALL))
     if m:
@@ -372,7 +378,10 @@ def _subject(path, rtype=0):
             return "", nav_common, page
 
         url = 'http://www.newsmth.net/bbstcon.php?board=%s&gid=%s%s' % (board, gid, pagenum)
-        result = fetch(url)
+        try:
+            result = fetch(url)
+        except DownloadError:
+            return "", nav_common, page_404.replace("<!-->", "Download error: <span style='red'>%s</span>" % url)
         t = re.search("<title>.*?-.*?-(.*?)</title>", convertFromGB2312ToUTF8(result.content))
         m = re.search("tconWriter.*?,(\\d+),\\d+,\\d+,(\\d+),(\\d+),", result.content)
 
