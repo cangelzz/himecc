@@ -18,7 +18,7 @@ import logging
 
 DEBUG = False
 
-myHeader = commonHeader + '<script src="/static/sort.js"></script>' + "</head><body>"
+myHeader = commonHeader + '<script src="/static/mysort.js"></script>' + "</head><body>"
 
 from google.appengine.api import users
 def _login_info(request, device=None):
@@ -217,9 +217,9 @@ def _board(path, rtype=0):
         nextPage = "/".join(isLast and ["board", board, paras[3]] or ["board", board, paras[3], str(int(page) + 1)])
 
         if (isLast):
-            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sort(\"threads_ul\")' class='btnCenterLeft'>◇</a><a class='btnCenter0 left36' href='/' style='{width:66px}'>Home</a>%s</h1>" % (lastPage, boardlink)
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sortul(\"threads_ul\")' class='btnCenterLeft btnSortAZ'>◇</a><a class='btnCenter0 left36' href='/' style='{width:66px}'>Home</a>%s</h1>" % (lastPage, boardlink)
         else:
-            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sort(\"threads_ul\")' class='btnCenterLeft'>◇</a><a class='btnCenter0 left18' href='/' style='{width:66px}'>Home</a>%s<a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, boardlink.replace("left36","left18"), nextPage)
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sortul(\"threads_ul\")' class='btnCenterLeft btnSortAZ'>◇</a><a class='btnCenter0 left18' href='/' style='{width:66px}'>Home</a>%s<a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, boardlink.replace("left36","left18"), nextPage)
 
         navlink_top = head + navlink
         page = ["<ul class='threads' id='threads_ul'>"]
@@ -403,7 +403,7 @@ def _subject(path, rtype=0):
                     s.append("<a href='/subject/%s/%s/%d'>%s</a>" % (bname, gid, i, i))
                 i = i + 1
             return "&nbsp;&nbsp;".join(s)
-        boardLink = "<a href='javascript:sort(\"posts_ul\")' class='btnCenterLeft'>◇</a><a class='btnCenter0' href='/board/%s/6' style='{width:%dpx}'>%s</a>" % (board, len(board)*8,board.upper())
+        boardLink = "<a href='javascript:sortul(\"posts_ul\")' class='btnCenterLeft btnSortAZ'>◇</a><a class='btnCenter0' href='/board/%s/6' style='{width:%dpx}'>%s</a>" % (board, len(board)*8,board.upper())
         if curPage == 1:
             if curPage == totalPage:
                 navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink.replace("btnCenter0", "btnCenter0 left36")
@@ -513,7 +513,8 @@ ipadHeader = """<html><head>
 <script src="/static/jquery.js"></script>
 <script src="/static/jScrollTouch.js"></script>
 <script src="/static/ipad.js"></script>
-<script src="/static/sort.js"></script>""" + tracking + """</head><body class="webkit">"""
+<script src="/static/mysort.js"></script>
+""" + tracking + """</head><body class="webkit">"""
 
 def makenav(favorlist):
     s = []
