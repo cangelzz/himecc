@@ -293,6 +293,15 @@ li a.normal {
 	-webkit-border-image: url(btn_center.png) 0 5 0 12;		
 }
 
+.btnSort
+{
+}
+
+.btnSortRe
+{
+	-webkit-border-image: url(btn_center2.png) 0 5 0 12;		    
+}
+
 .btnCenter2
 {
     position:relative;

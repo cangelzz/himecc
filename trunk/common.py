@@ -13,6 +13,7 @@ tracking = """<script type="text/javascript">
 </script>"""
 #"<script src='/static/jquery.js'></script>
 commonHeader = """<html><head>
+<head>HIME</title>
 <link rel="Stylesheet" href="/static/my.css" media="screen" type="text/css" />
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="robots" content="noindex,nofollow,noarchive,nosnippet">
