@@ -9,7 +9,7 @@ $(document).ready(function(){
     $('#progress').ajaxComplete(function() {
         $(this).hide();
 
-        $("div#divPosts h1 a.btnCenter").remove();
+        $("#divPosts h1.nav a.btnCenter0").remove();
         $("#boardh1").remove();
 
         bind_a();
