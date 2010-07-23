@@ -240,34 +240,6 @@ li a.normal {
     display: inline;
 }
 
-.button	
-{	
-
-   /* Set a button to be a block so its height and width can be adjusted */
-	display: block;		    
-	
-	height: 30px;
-	
-	/* Use the highest button height to ensure that text will vertically align on all buttons */
-	line-height: 28px;	 
-	
-	/* A button will expand to the width of its parent cell if no width is specified */
-	width: 50px;			
-	
-	font-size: 14px;
-	font-weight: bold;
-	font-family: Helvetica;
-	color: #3c491a;
-	
-	text-decoration: none;
-	text-align: center;
-	
-	padding: 0;
-	margin: 0;
-
-}
-
-
 .btnCenter0
 {	
 	display: inline-block;		    
@@ -283,7 +255,7 @@ li a.normal {
 	text-align: center;
 	
     padding: 0;
-    padding-right: 5px;
+    padding-right: 6px;
 	margin: 0;
 
     text-shadow: #f5f4d7 0px 1px 1px;
@@ -348,7 +320,7 @@ li a.normal {
 	
 		
 	padding: 0;
-    padding-right: 5px;
+    padding-right: 6px;
 	margin: 0;
 
     text-shadow: #f5f4d7 0px 1px 1px;
@@ -560,11 +532,11 @@ li a.normal {
     position:absolute;
     z-index: 50;
     right: 0px;
-    top: 25px;
+    top: 26px;
     background: #CCCCCC;
     display:none;
     padding-left: 0px;
-    padding-top: 8px;
+    padding-top: 16px;
     padding-right: 0px;
     padding-bottom:8px;
     border-left:1px solid #0099FF;
