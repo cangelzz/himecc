@@ -7,6 +7,7 @@ from google.appengine.ext import webapp
 from google.appengine.api import images
 from google.appengine.ext import db
 from google.appengine.runtime.apiproxy_errors import RequestTooLargeError
+from google.appengine.runtime import DeadlineExceededError
 from google.appengine.api.urlfetch_errors import *
 from random import random
 import re 
@@ -310,6 +311,8 @@ def _content(bid, id, page=""):
                     bindata = fetch(url=att_url, method=urlfetch.GET, deadline=10).content
                 except DownloadError:
                     attpart = attpart + "<br><span style='color:red'>[DOWNLOAD_ERROR]</span>"
+                except DeadlineExceededError:
+                    attpart = attpart + "<br><span style='color:red'>[DEADLINE_EXCEEDED_ERROR]</span>"
                     continue
                 img = images.Image(bindata)
                 if img.width > 300:
@@ -440,11 +443,14 @@ def _subject(path, rtype=0):
             posts = posts[1:]
 
         for p in posts:
-            content = _content(bid, p[0])
-            if type(content) == str:
-                page = page_404.replace("<!-->", content)
-                return "", nav_common, page
-            result = _content_html(content[6:], 2)
+            try:
+                content = _content(bid, p[0])
+                if type(content) == str:
+                    page = page_404.replace("<!-->", content)
+                    return "", nav_common, page
+                result = _content_html(content[6:], 2)
+            except DeadlineExceededError:
+                result = r"<span style='color:red'>[DEADLINE EXCEEDED]</span>"
             page += "<li>%s</li>" % result
         page += "</ul>"
 
