@@ -54,7 +54,10 @@ def _board(path):
             return page_404.replace("<!-->", r"路径参数错误；<span style='color:red'>%s</span>" % path)
 
         url = "http://bbs.jjwxc.net/board.php?board=" + board + "&page=" + pagetogo
-        result = fetch(url)
+        try:
+            result = fetch(url)
+        except DownloadError:
+            return page_404.replace("<!-->", r"下载错误,请重试")
         content = toUTF8(result.content)
         p =re.compile("href=\"(show.*?)id=(\\d+).*?\".*?>(.*?)&nbsp.*?<td>&nbsp;(.*?)</td>", re.MULTILINE|re.DOTALL)
         posts = re.findall(p, content)
