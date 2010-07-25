@@ -8,6 +8,7 @@ from common import tracking, page_404, copyright, commonHeader, myFooter
 from define import jj_boards, _jjid
 import re 
 import logging
+import traceback
 
 favor = {"20": "战色逆乐园", "3": "耽美闲情"}
 board2name = {"20": "战色逆乐园", "3": "耽美闲情"}
@@ -103,7 +104,6 @@ def _subject(path):
         try: 
             result = fetch(url)
         except DownloadError:
-            import traceback
             return page_404.replace("<!-->", "<pre>%s</pre>" % traceback.format_exc())
 
         content = toUTF8(result.content)
@@ -113,7 +113,6 @@ def _subject(path):
         try:
             subj = re.search("主题：(.*?)</td>", content).group(1)
         except AttributeError:
-            import traceback
             return page_404.replace("<!-->", "<pre>%s</pre>" % traceback.format_exc())
 
         header = "<h1>" + subj + "</h1>"
