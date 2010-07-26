@@ -7,6 +7,9 @@ Disallow: /
 User-agent: Baiduspider
 Disallow: /
 
+User-agent: Baiduspider+
+Disallow: /
+
 User-agent: Googlebot
 Disallow: /
 
