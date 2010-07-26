@@ -303,7 +303,7 @@ def _content(bid, id, page=""):
                 attpart = attpart + "<br><span style='color:crimson'>[TOO_LARGE_IMAGE]</span>"
                 continue
             fname = att[0]
-            ext = fname[fname.find("."):]
+            ext = fname[fname.rfind("."):]
             extL = ext.lower()
             if extL == ".jpg" or extL == ".jpeg" or extL == ".bmp" or extL == ".png" or extL == ".gif":
                 att_url = "http://att.newsmth.net/att.php?n.%s.%s.%s" % (bid, id, att[2]) + ext
