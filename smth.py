@@ -311,6 +311,7 @@ def _content(bid, id, page=""):
                     bindata = fetch(url=att_url, method=urlfetch.GET, deadline=10).content
                 except DownloadError:
                     attpart = attpart + "<br><span style='color:red'>[DOWNLOAD_ERROR]</span>"
+                    continue
                 except DeadlineExceededError:
                     attpart = attpart + "<br><span style='color:red'>[DEADLINE_EXCEEDED_ERROR]</span>"
                     continue
