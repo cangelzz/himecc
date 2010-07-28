@@ -188,9 +188,9 @@ def _board(path, rtype=0):
 
 
         board, oldboard = smartboard(board.lower())
-        if board == "none":
-            page = page_404.replace("<!-->", r"错误的讨论区；<span style='color:red'>%s</span>" % oldboard)
-            return "", nav_common, page
+        #if board == "none":
+        #    page = page_404.replace("<!-->", r"错误的讨论区: <span style='color:red'>%s</span>" % oldboard)
+        #   return "", nav_common, page
 
         head = "<h1 id='boardh1'>%s</h1>" % board.upper()
 
@@ -208,7 +208,7 @@ def _board(path, rtype=0):
         posts = re.findall("c\\.o\\((\\d+),(\\d+),'(.*?)','(.*?)',(\\d+),'(.*?)',(\\d+),\\d+,\\d+\\)", content)
         m = re.search("docWriter.*?(\\d+),\\d+,\\d+,\\d+,(\\d+),", content)
         if not m:
-            msg = r"错误的讨论区"
+            msg = r"错误的讨论区: <span style='color:red'>%s</span>" % board
             page = page_404.replace("<!-->", msg)
             return "", nav_common, page
         page = m.group(2)
