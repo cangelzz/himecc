@@ -11,7 +11,7 @@ from google.appengine.runtime import DeadlineExceededError
 from google.appengine.api.urlfetch_errors import *
 from random import random
 import re 
-from define import board2id, favor, favor2chs, Favor, top90_group
+from define import board2chs, favor, Favor, top90_group
 from common import *
 from util import *
 import base64
@@ -114,21 +114,20 @@ class MainPage(webapp.RequestHandler):
 
         default, favorlist = _favor()
         for b in ["top10", "top90"] + favorlist:
-            if default:
-                page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div><div style='display:inline-block;float:right'>%s</div></a></li>" % (b, b.upper(), favor2chs[b]))
-            else:
-                page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div></a></li>" % (b, b.upper()))
+            chsname = b in board2chs and board2chs[b] or ""
+            page.append("<li><a href='/board/%s/6'><div style='display:inline-block'>%s</div><div style='display:inline-block;float:right'>%s</div></a></li>" % (b, b.upper(), chsname))
+
         page.append("</ul>")
         print_all(self, [myHeader, head, navlink, "".join(page), myFooter.replace("<!-->", copyright.replace("<!-->","<a href='/jj/'>jj</a><a href='/ipad/'>ipad</a>"))])
 
 
 def smartboard(b):
-    if b in board2id.keys(): return b, b
+    if b in board2chs.keys(): return b, b
     else:
-        for bs in sorted(board2id.keys()):
+        for bs in sorted(board2chs.keys()):
             if b in bs:
                 return bs, b
-        return "none", b
+        return b, b
 
 def _rss(category, idx=None):
     page = ["<ul class='threads'>"]
