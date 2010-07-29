@@ -1,4 +1,11 @@
 $(document).ready(function(){
+
+    $(window).hashchange(function () {
+        //alert(location.hash);
+        loadSmart(location.hash.substr(1));
+    });
+
+    $(window).hashchange();
  
     bind_a();
 
@@ -44,11 +51,12 @@ function bind_a() {
         if (this.pathname == "/") $(this).remove();
         if (url.match(/history.go/)) $(this).remove();
         if (url.match(/javascript/)) return;
+        if (url.match(/#/)) return;
         if (url.match(/(board|subject|post)/))
         {
             url = url.replace("board", "iboard").replace("subject","isubject").replace("post","ipost");
-            this.href = "javascript:loadSmart('" + url + "')";
-    
+            this.href = "#" + url;
+   
             $(this).bind('click', function () {
                 if ($(this).hasClass("hBoard")) {
                     $(this).siblings().css({"background": "", "color": "","text-shadow":""});
