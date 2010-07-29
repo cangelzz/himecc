@@ -45,6 +45,11 @@ function setLayout() {
     $("#main").css("height", $(window).height()-$("#navboard").height());
 }
 
+function hlBoard(bd) {
+    $(bd).siblings().css({"background": "", "color": "","text-shadow":""});
+    $(bd).css({"background": "#0099FF", "color": "white","text-shadow":"gray 0px 1px 1px;"});
+}
+
 function bind_a() {
     $("a").each(function(){
         var url = this.href;
@@ -59,9 +64,13 @@ function bind_a() {
    
             $(this).bind('click', function () {
                 if ($(this).hasClass("hBoard")) {
-                    $(this).siblings().css({"background": "", "color": "","text-shadow":""});
-                    $(this).css({"background": "#0099FF", "color": "white","text-shadow":"gray 0px 1px 1px;"});
-                }            
+                    hlBoard("#"+this.id);
+                    //$(this).siblings().css({"background": "", "color": "","text-shadow":""});
+                    //$(this).css({"background": "#0099FF", "color": "white","text-shadow":"gray 0px 1px 1px;"});
+                }
+
+                if (location.hash == this.hash)
+                    $(window).hashchange();
 
                 if (_gaq) {
                     _gaq._getAsyncTracker()._trackPageview(url);
@@ -72,6 +81,8 @@ function bind_a() {
 }
 
 function loadSmart(path) {
+    var m = path.match(/(iboard|isubject)\/(.*)\//);
+    if (m) hlBoard("#hb"+m[2]);
     if (path.match(/iboard/)) loadBoard(path);
     if (path.match(/isubject/)) loadSubject(path);
     if (path.match(/ipost/)) loadPost(path);

@@ -526,7 +526,7 @@ ipadHeader = """<html><head>
 def makenav(favorlist):
     s = []
     for b in favorlist:
-        s.append("<a class='hBoard' href=\"/board/%s/6\">%s</a>" % (b, b.upper()))
+        s.append("<a id='%s' class='hBoard' href=\"/board/%s/6\">%s</a>" % ("hb"+b.lower(), b.lower(), b.upper()))
     return "".join(s)
     #return "<span style='color:gray;'>|</span>".join(s)
 
