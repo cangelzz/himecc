@@ -518,6 +518,7 @@ ipadHeader = """<html><head>
 <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" /> 
 <script src="/static/jquery.js"></script>
 <script src="/static/jScrollTouch.js"></script>
+<script src="/static/jquery.ba-hashchange.min.js"></script>
 <script src="/static/ipad.js"></script>
 <script src="/static/mysort.js"></script>
 """ + tracking + """</head><body class="webkit">"""
