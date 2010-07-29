@@ -93,7 +93,7 @@ function loadSmart(path) {
 
 function loadBoard(path)
 {
-    $('#divThreads').load(path);
+    $('#divThreads').load(path, function(){sortul("threads_ul");});
 }
 
 function loadSubject(path)
