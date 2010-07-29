@@ -48,6 +48,8 @@ function setLayout() {
 function hlBoard(bd) {
     $(bd).siblings().css({"background": "", "color": "","text-shadow":""});
     $(bd).css({"background": "#0099FF", "color": "white","text-shadow":"gray 0px 1px 1px;"});
+    while ($(bd).position().left > $(window).width()-60) nav2right();
+    while ($(bd).position().left < 30) nav2left();
 }
 
 function bind_a() {
@@ -81,7 +83,7 @@ function bind_a() {
 }
 
 function loadSmart(path) {
-    var m = path.match(/(iboard|isubject)\/(.*)\//);
+    var m = path.match(/(iboard|isubject)\/(.*?)\//);
     if (m) hlBoard("#hb"+m[2]);
     if (path.match(/iboard/)) loadBoard(path);
     if (path.match(/isubject/)) loadSubject(path);
