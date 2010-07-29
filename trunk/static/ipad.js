@@ -22,13 +22,21 @@ $(document).ready(function(){
         }
     
     });
+
+    $(window).resize(function() {
+        setLayout();
+    })
     
-    $("#navcon").css("width", $(window).width() - 90);
-    $("#main").css("height", $(window).height()-$("#navboard").height());
+    setLayout();
     if (navigator.userAgent.match(/Chrome/i)) return;
     $("#divThreads").jScrollTouch();
     $("#divPosts").jScrollTouch();
 });
+
+function setLayout() {
+    $("#navcon").css("width", $(window).width() - 90);
+    $("#main").css("height", $(window).height()-$("#navboard").height());
+}
 
 function bind_a() {
     $("a").each(function(){
