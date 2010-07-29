@@ -174,7 +174,7 @@ def _board(path, rtype=0):
         if rtype == 1:
             navlink = ""
         else:
-            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter0' href='/' style='{width:66px}'>Home</a></h1>"
+            navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a><a class='btnCenter0' href='/'>H </a></h1>"
         navlink_top = head + navlink
 
         if board == "top10":
@@ -196,10 +196,10 @@ def _board(path, rtype=0):
 
         if paras[3] == "0":
             ftype = ""
-            boardlink = "<a class='btnCenter0 left36' href='/board/%s/6'>Subject</a>" % board
+            boardlink = "<a class='btnCenter0 left36 btnCenterChosen' href='/board/%s/0'>N </a><a class='btnCenter0 left36' href='/board/%s/6'>S </a>" % (board, board)
         else:
             ftype =  "&ftype=" + paras[3]
-            boardlink = "<a class='btnCenter0 left36' href='/board/%s/0'>Normal</a>" % board
+            boardlink = "<a class='btnCenter0 left36' href='/board/%s/0'>N </a><a class='btnCenter0 left36 btnCenterChosen' href='/board/%s/6'>S </a>" % (board, board)
 
         url = 'http://www.newsmth.net/bbsdoc.php?board=' + board + ftype + pagetogo
 
@@ -217,9 +217,9 @@ def _board(path, rtype=0):
         nextPage = "/".join(isLast and ["board", board, paras[3]] or ["board", board, paras[3], str(int(page) + 1)])
 
         if (isLast):
-            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sortul(\"threads_ul\")' class='btnCenterLeft btnSortAZ'>◇</a><a class='btnCenter0 left36' href='/' style='{width:66px}'>Home</a>%s</h1>" % (lastPage, boardlink)
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sortul(\"threads_ul\")' class='btnCenterLeft btnSortAZ'>◇</a><a class='btnCenter0 left50' href='/'>H </a>%s</h1>" % (lastPage, boardlink)
         else:
-            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sortul(\"threads_ul\")' class='btnCenterLeft btnSortAZ'>◇</a><a class='btnCenter0 left18' href='/' style='{width:66px}'>Home</a>%s<a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, boardlink.replace("left36","left18"), nextPage)
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sortul(\"threads_ul\")' class='btnCenterLeft btnSortAZ'>◇</a><a class='btnCenter0 left32' href='/'>H </a>%s<a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, boardlink.replace("left36","left18"), nextPage)
 
         navlink_top = head + navlink
         page = ["<ul class='threads' id='threads_ul'>"]
