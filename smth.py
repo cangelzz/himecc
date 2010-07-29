@@ -277,7 +277,7 @@ def _content(bid, id, page=""):
         title = re.search(r"标  题: (.*?)\\n", content).group(1)
         ids = re.search(r"conWriter.*?'([\w\d]+)',\s(\d+),\s(\d+),\s(\d+),\s(\d+)", content).groups()
         au = re.search(r"[发寄]信人: (.*?\)),?", content).group(1) #search author
-        m = re.search(r"(来  源|, 站内).*?(\\n)+(.*?)(\\n)+--", content, (re.MULTILINE | re.DOTALL))  #search StationIn #fix zhannei in nickname
+        m = re.search(r"(来  源|, 站内|, 转信).*?(\\n)+(.*?)(\\n)+--", content, (re.MULTILINE | re.DOTALL))  #search StationIn #fix zhannei in nickname
     except AttributeError:
         import traceback
         return "<pre>%s</pre>" % traceback.format_exc()
