@@ -146,7 +146,7 @@ def _rss(category, idx=None):
     title_and_author =  re.findall("<description>.*?:\s(.*?),.*?<br/>.*?:\s(.*?)<br/>",content)
 
     for g1, g2 in zip(bname_and_id, title_and_author):
-        page.append("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span> <span class='boardinth'>[%s]</span></a></li>" % (g1[0], g1[1], g2[1], g2[0], g1[0]))
+        page.append("<li><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span> <span class='boardinth'>[%s]</span></a></li>" % (g1[0].lower(), g1[1], g2[1], g2[0], g1[0]))
     page.append("</ul>")
 
     return "".join(page)
@@ -188,9 +188,6 @@ def _board(path, rtype=0):
 
 
         board, oldboard = smartboard(board.lower())
-        #if board == "none":
-        #    page = page_404.replace("<!-->", r"错误的讨论区: <span style='color:red'>%s</span>" % oldboard)
-        #   return "", nav_common, page
 
         head = "<h1 id='boardh1'>%s</h1>" % board.upper()
 
@@ -238,7 +235,7 @@ def _board(path, rtype=0):
             if paras[3] == "0":
                 page.append(("<li%s><a href='/post/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (classname, m.group(1), p[0], p[5], p[2])))
             else:
-                page.append(("<li%s><a href='/subject/%s/%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (classname, board, p[0], p[5], p[2])))
+                page.append(("<li%s><a href='/subject/%s/%s&lz=%s'>%s&nbsp;&nbsp;<span class='author'>%s</span></a></li>" % (classname, board, p[0], p[2], p[5], p[2])))
 
         page.append("</ul>")
 
@@ -332,15 +329,20 @@ def _content(bid, id, page=""):
     # board, bid, id, gid, reid, title, author, reply, refer, attach
     # 0      1    2   3    4     5      6       7      8      9
     #                                   0       1      2      3
-def _content_html(li, rtype):
+def _content_html(li, rtype, lz=None):
+    if lz and li[0].find(lz) != -1:
+        au_html = "<span class='authorlz'>%s</span>: " % li[0]
+    else:
+        au_html = "<span class='author'>%s</span>: " % li[0]
+
     if rtype == 1:
-        return "<span class='author'>%s</span>: <span style='margin:0px;padding:0px;'>%s<span style='color:grey;'><br/>%s</span>%s</span>" % (li[0], li[1], li[2], li[3])
+        return au_html + "<span style='margin:0px;padding:0px;'>%s<span style='color:grey;'><br/>%s</span>%s</span>" % (li[1], li[2], li[3])
     elif rtype == 2:
         random_id = str(random())[2:]
         refer = ""
         if li[2] != "":
             refer = "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'><br/>" + li[2] + "</span></a>"
-        return "<span class='author'>%s</span>: <span style='margin:0px;padding:0px;'>%s" % (li[0], li[1]) + refer + li[3] + "</span>"
+        return au_html + "<span style='margin:0px;padding:0px;'>%s" % (li[1]) + refer + li[3] + "</span>"
 
 def _content_collection(bid, id):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s' % (bid, id))
@@ -368,7 +370,11 @@ def _content_collection(bid, id):
             result.append(re.sub("(^[\w\d]+.*?\)).*?提到:", r"<span class='author'>\1</span>: ",p))
         return "<li>" + "</li><li>".join(result) + "</li>"
 
-def _subject(path, rtype=0):
+def _subject(path, rtype=0, lz=None):
+        m_lz = re.search("%26lz%3D(.*)", path)
+        if (m_lz):
+            lz = m_lz.group(1)
+            path = path.replace(m_lz.group(), "")
         paras = path.split('/')
         try:
             board,gid = paras[2],paras[3]
@@ -396,14 +402,18 @@ def _subject(path, rtype=0):
         totalPage = int(m.group(2))
         curPage = int(m.group(3))
 
-        def makejumplist(c, t, bname, gid):
+        posts = re.findall('''\[(\d+),'(.*?)'\]''', result.content)
+        lz = (curPage == 1) and posts[0][1] or lz
+        lz_link = lz and "&lz="+lz or ""
+
+        def makejumplist(c, t, bname, gid, lz=lz_link):
             s = []
             i = 1
             while i <= t:
                 if i == c:
                     s.append(str(i))
                 else:
-                    s.append("<a href='/subject/%s/%s/%d'>%s</a>" % (bname, gid, i, i))
+                    s.append("<a href='/subject/%s/%s/%d%s'>%s</a>" % (bname, gid, i, lz,i))
                 i = i + 1
             return "&nbsp;&nbsp;".join(s)
         boardLink = "<a href='javascript:sortul(\"posts_ul\")' class='btnCenterLeft btnSortAZ'>◇</a><a class='btnCenter0' href='/board/%s/6' style='{width:%dpx}'>%s</a>" % (board, len(board)*8,board.upper())
@@ -412,27 +422,26 @@ def _subject(path, rtype=0):
                 navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink.replace("btnCenter0", "btnCenter0 left36")
                 navlink_bottom = navlink
             else:
-                nextPage = "/".join(["subject", board, gid, "2"])
+                nextPage = "/".join(["subject", board, gid, "2"]) + lz_link
                 navlink = "<h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s<a href='/%s' class='btnRight0'>2</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (boardLink, nextPage, makejumplist(curPage, totalPage, board, gid))
                 navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s<a href='/%s' class='btnRight0'>2</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), boardLink, nextPage)
         else:
             if curPage == totalPage:
                 lastnum = curPage - 1
-                lastPage = "/".join(["subject", board, gid, str(lastnum)])
+                lastPage = "/".join(["subject", board, gid, str(lastnum)]) + lz_link
                 navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>%d</a>%s<a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, lastnum, boardLink.replace("btnCenter0","btnCenter0 left18"), makejumplist(curPage, totalPage, board, gid))
                 navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>%d</a>%s<a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastnum, boardLink.replace("btnCenter0","btnCenter0 left18"))
             else:
                 lastnum = curPage - 1
                 nextnum = curPage + 1
-                lastPage = "/".join(["subject", board, gid, str(lastnum)])
-                nextPage = "/".join(["subject", board, gid, str(nextnum)])
+                lastPage = "/".join(["subject", board, gid, str(lastnum)]) + lz_link
+                nextPage = "/".join(["subject", board, gid, str(nextnum)]) + lz_link
                 navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>%s</a>%s<a href='/%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum), makejumplist(curPage, totalPage, board, gid))
                 navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='/%s' class='btnLeft0'>%s</a>%s<a href='/%s' class='btnRight0'>%s</a><a class='btnCenterRight' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastPage, str(lastnum), boardLink, nextPage, str(nextnum))
 
         navlink =  "<h1>%s</h1>" % t.group(1) + navlink
         navlink_bottom = navlink_bottom.replace("snavtop", "snavbottom")
 
-        posts = re.findall('''\[(\d+),'(.*?)'\]''', result.content)
         page = "<ul class='posts' id='posts_ul'>"
 
         #different handle SameSubject posts
@@ -448,7 +457,7 @@ def _subject(path, rtype=0):
                 if type(content) == str:
                     page = page_404.replace("<!-->", content)
                     return "", nav_common, page
-                result = _content_html(content[6:], 2)
+                result = _content_html(content[6:], 2, lz=lz)
             except DeadlineExceededError:
                 result = r"<span style='color:red'>[DEADLINE EXCEEDED]</span>"
             page += "<li>%s</li>" % result
