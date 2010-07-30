@@ -344,6 +344,12 @@ def _content_html(li, rtype, lz=None):
             refer = "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'><br/>" + li[2] + "</span></a>"
         return au_html + "<span style='margin:0px;padding:0px;'>%s" % (li[1]) + refer + li[3] + "</span>"
 
+def _check_lz(m):
+    if lz and m.group(1).find(lz) != -1:
+        return "<span class='authorlz'>%s</span>: " % m.group(1)
+    else:
+        return "<span class='author'>%s</span>: " % m.group(1)
+
 def _content_collection(bid, id):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s' % (bid, id))
     try:
@@ -357,6 +363,7 @@ def _content_collection(bid, id):
         s = re.sub("<br/>\s+", "", s)
         hl = "☆─────────────────────────────────────☆"
         ps = s.split(hl)[1:]
+        lz = re.search("(^[\w\d]+.*?\)).*?提到:", ps[0]).group(1)
         result = []
         for p in ps:
             inx = p.find("【")
@@ -366,8 +373,14 @@ def _content_collection(bid, id):
                 st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
                 random_id = str(random())[2:]
                 p = p[:inx].replace("<br/>", "") + "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'>" + "<br/>" + st + "</span></a>"
+            au = re.search("(^[\w\d]+.*?\)).*?提到:", p)
+            if au.group(1).find(lz) != -1:
+                result.append(re.sub("(^[\w\d]+.*?\)).*?提到:", r"<span class='authorlz'>\1</span>: ", p))
+            else:
+                result.append(re.sub("(^[\w\d]+.*?\)).*?提到:", r"<span class='author'>\1</span>: ", p))
 
-            result.append(re.sub("(^[\w\d]+.*?\)).*?提到:", r"<span class='author'>\1</span>: ",p))
+            #r"<span class='author'>\1</span>: "
+            #result.append(re.sub("(^[\w\d]+.*?\)).*?提到:", _check_lz(lz), p))
         return "<li>" + "</li><li>".join(result) + "</li>"
 
 def _subject(path, rtype=0, lz=None):
