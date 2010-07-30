@@ -46,10 +46,16 @@ function setLayout() {
 }
 
 function hlBoard(bd) {
+    if ($(bd).length == 0) {
+        var b = bd.substr(1);
+        var bn = bd.substr(3);
+        $("#navcon").append('<a id="'+b+'" class="hBoard" href="#http://155.35.87.121:8000/iboard/'+bn+'/6">'+bn+'</a>');
+    }
     $(bd).siblings().css({"background": "", "color": "","text-shadow":""});
     $(bd).css({"background": "#0099FF", "color": "white","text-shadow":"gray 0px 1px 1px;"});
-    while ($(bd).position().left > $(window).width()-60) nav2right();
-    while ($(bd).position().left < 30) nav2left();
+    var curLeft = $(bd).position().left;
+    if (curLeft > $(window).width() - 90 || curLeft < 0)
+        $('#navcon').scrollLeft(curLeft - 30);
 }
 
 function bind_a() {
@@ -93,12 +99,18 @@ function loadSmart(path) {
 
 function loadBoard(path)
 {
-    $('#divThreads').load(path, function(){sortul("threads_ul");});
+    $('#divThreads').load(path, function(){sortul("threads_ul");
+        var m = path.match(/(iboard|isubject)\/(.*?)\//);
+        if (m) hlBoard("#hb"+m[2]);
+    });
 }
 
 function loadSubject(path)
 {
-    $('#divPosts').load(path);
+    $('#divPosts').load(path, function(){
+        var m = path.match(/(iboard|isubject)\/(.*?)\//);
+        if (m) hlBoard("#hb"+m[2]);
+    });
 }
 
 function loadPost(path)

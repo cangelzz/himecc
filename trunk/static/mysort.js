@@ -1,6 +1,7 @@
 function sortul(ulid)
 {
     var ul = document.getElementById(ulid);
+    if (ul == null) return;
     var lis = ul.getElementsByTagName("li");
     var len = lis.length;
     if (len > 0) {

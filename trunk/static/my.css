@@ -73,6 +73,10 @@ h1 a.login:first-child {
     color: #6699FF;
 }
 
+.authorlz {
+    color: crimson;
+}
+
 div.floatright
 {
     float: right;
@@ -515,6 +519,7 @@ li a.normal {
     text-decoration:none;
     letter-spacing: -1px;
     padding:0 2;
+    text-transform: uppercase;
 }
 
 #navboard a {
