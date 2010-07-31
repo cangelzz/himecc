@@ -90,7 +90,7 @@ function bind_a() {
 
 function loadSmart(path) {
     var m = path.match(/(iboard|isubject)\/(.*?)\//);
-    if (m) hlBoard("#hb"+m[2]);
+    if (m) hlBoard("#hb"+m[2].toLowerCase());
     if (path.match(/iboard/)) loadBoard(path);
     if (path.match(/isubject/)) loadSubject(path);
     if (path.match(/ipost/)) loadPost(path);
@@ -101,7 +101,7 @@ function loadBoard(path)
 {
     $('#divThreads').load(path, function(){sortul("threads_ul");
         var m = path.match(/(iboard|isubject)\/(.*?)\//);
-        if (m) hlBoard("#hb"+m[2]);
+        if (m) hlBoard("#hb"+m[2].toLowerCase());
     });
 }
 
@@ -109,7 +109,7 @@ function loadSubject(path)
 {
     $('#divPosts').load(path, function(){
         var m = path.match(/(iboard|isubject)\/(.*?)\//);
-        if (m) hlBoard("#hb"+m[2]);
+        if (m) hlBoard("#hb"+m[2].toLowerCase());
     });
 }
 
