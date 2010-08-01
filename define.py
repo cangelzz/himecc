@@ -619,6 +619,7 @@ board2chs = {
 'tamialiu' : '刘涛·涛涛不绝',
 'tarot' : '塔罗牌',
 'tcm' : '中医',
+'test': '测试专用',
 'teaart' : '茶艺',
 'tennis' : '网球',
 'tex' : 'TeX和LaTeX',
