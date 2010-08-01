@@ -100,7 +100,7 @@ function loadSmart(path) {
 function loadBoard(path)
 {
     $('#divThreads').load(path, function(){sortul("threads_ul");
-        var m = path.match(/(iboard|isubject)\/(.*?)\//);
+        var m = path.match(/(iboard|isubject|board)\/(.*?)\//);
         if (m) hlBoard("#hb"+m[2].toLowerCase());
     });
 }

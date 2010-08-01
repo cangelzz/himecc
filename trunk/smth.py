@@ -329,7 +329,7 @@ def _content(bid, id, page=""):
     # board, bid, id, gid, reid, title, author, reply, refer, attach
     # 0      1    2   3    4     5      6       7      8      9
     #                                   0       1      2      3
-def _content_html(li, rtype, lz=None):
+def _content_html(li, rtype, lz=None, option={}):
     if lz and li[0].find(lz) != -1:
         au_html = "<span class='authorlz'>%s</span>: " % li[0]
     else:
@@ -338,10 +338,13 @@ def _content_html(li, rtype, lz=None):
     if rtype == 1:
         return au_html + "<span style='margin:0px;padding:0px;'>%s<span style='color:grey;'><br/>%s</span>%s</span>" % (li[1], li[2], li[3])
     elif rtype == 2:
-        random_id = str(random())[2:]
         refer = ""
         if li[2] != "":
-            refer = "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'><br/>" + li[2] + "</span></a>"
+            if option.get("hideRefer", True):
+                random_id = str(random())[2:]
+                refer = "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'><br/>" + li[2] + "</span></a>"
+            else:
+                refer = "<span style='color:grey'><br/>" + li[2] + "</span>"
         return au_html + "<span style='margin:0px;padding:0px;'>%s" % (li[1]) + refer + li[3] + "</span>"
 
 def _check_lz(m):
@@ -350,7 +353,7 @@ def _check_lz(m):
     else:
         return "<span class='author'>%s</span>: " % m.group(1)
 
-def _content_collection(bid, id):
+def _content_collection(bid, id, option={}):
     url = ('http://www.newsmth.net/bbscon.php?bid=%s&id=%s' % (bid, id))
     try:
         result = fetch(url)
@@ -371,8 +374,11 @@ def _content_collection(bid, id):
                 st = p[inx:]
                 refergroup = st.split("<br/>")
                 st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
-                random_id = str(random())[2:]
-                p = p[:inx].replace("<br/>", "") + "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'>" + "<br/>" + st + "</span></a>"
+                if option.get("hideRefer", True):
+                    random_id = str(random())[2:]
+                    p = p[:inx].replace("<br/>", "") + "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'>" + "<br/>" + st + "</span></a>"
+                else:
+                    p = p[:inx].replace("<br/>", "") + "<span style='color:grey'><br/>" + st + "</span>"
             au = re.search("(^[\w\d]+.*?\)).*?提到:", p)
             if au.group(1).find(lz) != -1:
                 result.append(re.sub("(^[\w\d]+.*?\)).*?提到:", r"<span class='authorlz'>\1</span>: ", p))
@@ -383,7 +389,7 @@ def _content_collection(bid, id):
             #result.append(re.sub("(^[\w\d]+.*?\)).*?提到:", _check_lz(lz), p))
         return "<li>" + "</li><li>".join(result) + "</li>"
 
-def _subject(path, rtype=0, lz=None):
+def _subject(path, rtype=0, lz=None, option={}):
         m_lz = re.search("%26lz%3D(.*)", path)
         if (m_lz):
             lz = m_lz.group(1)
@@ -460,7 +466,7 @@ def _subject(path, rtype=0, lz=None):
         #different handle SameSubject posts
         bid = m.group(1)
         if t.group(1).find("合集") > 0:
-            result = _content_collection(bid, posts[0][0])
+            result = _content_collection(bid, posts[0][0], option=option)
             page += result
             posts = posts[1:]
 
@@ -470,7 +476,7 @@ def _subject(path, rtype=0, lz=None):
                 if type(content) == str:
                     page = page_404.replace("<!-->", content)
                     return "", nav_common, page
-                result = _content_html(content[6:], 2, lz=lz)
+                result = _content_html(content[6:], 2, lz=lz, option=option)
             except DeadlineExceededError:
                 result = r"<span style='color:red'>[DEADLINE EXCEEDED]</span>"
             page += "<li>%s</li>" % result
@@ -480,7 +486,11 @@ def _subject(path, rtype=0, lz=None):
 
 class Subject(webapp.RequestHandler):
     def get(self):
-        navlink, navlink_bottom, page = _subject(self.request.path.rstrip("/"))
+        if re.search("(webkit|safari|chrome)", self.request.headers["User-Agent"], re.I):
+            hideRefer = True
+        else:
+            hideRefer = False
+        navlink, navlink_bottom, page = _subject(self.request.path.rstrip("/"), option={"hideRefer": hideRefer})
         print_all(self, [myHeader, navlink, page, navlink_bottom, myFooter])
 
 class iSubject(webapp.RequestHandler):
