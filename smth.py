@@ -558,12 +558,12 @@ ipadHeader = """<html><head>
 def makenav(favorlist):
     s = []
     for b in favorlist:
-        s.append("<a id='%s' class='hBoard' href=\"/board/%s/6\">%s</a>" % ("hb"+b.lower(), b.lower(), b.upper()))
-    return "".join(s)
+        s.append("<li><a id='%s' class='hBoard' href=\"/board/%s/6\">%s</a></li>" % ("hb"+b.lower(), b.lower(), b.upper()))
+    return "<ul id='example-two'>" + "".join(s) + "</ul>"
     #return "<span style='color:gray;'>|</span>".join(s)
 
 ipadBody = """
-<div id="navboard"><div class="navleft"><a href="javascript:nav2left()">&lt;</a></div><div id="navcon"><!--B></div><div class="navright"><a href="javascript:nav2right()">&gt;</a></div><div class="navright"><a href="javascript:$('#toolbox').toggle()">+</a></div></div>
+<div id="navboard"><div class="navleft"><a href="javascript:nav2left()">&lt;</a></div><div id="navcon"><!--B></div><div class="navright"><a href="javascript:nav2right()">&gt;</a></div><div class="navright"><a href="javascript:showTool();">+</a></div></div>
 <div id="progress" style="display:none"><span>loading ...</span></div>
 <div id="main">
 
