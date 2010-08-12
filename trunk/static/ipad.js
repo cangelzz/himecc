@@ -35,13 +35,54 @@ $(document).ready(function(){
     })
     
     setLayout();
-    if (navigator.userAgent.match(/Chrome/i)) return;
+
+        $(function() {
+        
+            var $el, leftPos, newWidth,
+            $mainNav2 = $("#example-two");
+        
+            $mainNav2.append("<li id='magic-line'></li>");
+    
+            var $magicLineTwo = $("#magic-line");
+        
+            $magicLineTwo
+                .css("left", $("#navcon").position().left)
+                .data("origLeft", $("#navcon").position().left)
+                .data("origWidth", $magicLineTwo.width())
+                .data("origColor", "#3C6");
+                        
+            $("#example-two li").find("a").hover(function() {
+                $el = $(this);
+                leftPos = $el.position().left;
+                newWidth = $el.parent().width();
+                $magicLineTwo.stop().animate({
+                    left: leftPos,
+                    width: newWidth,
+                    backgroundColor: $el.attr("rel")
+                })
+            }, function() {
+                $magicLineTwo.stop().animate({
+                    left: $magicLineTwo.data("origLeft"),
+                    width: $magicLineTwo.data("origWidth"),
+                    backgroundColor: $magicLineTwo.data("origColor")
+                });    
+            });
+
+        });
+            
+
+    if (navigator.userAgent.match(/Chrome/i)) { 
+        return;
+    }
     $("#divThreads").jScrollTouch();
     $("#divPosts").jScrollTouch();
 });
 
 function setLayout() {
     $("#navcon").css("width", $(window).width() - 90);
+    var len = 0;
+    $("#navcon ul li a").each(function() { len += $(this).outerWidth();});
+    $("#navcon ul").css("width", len);
     $("#main").css("height", $(window).height()-$("#navboard").height());
 }
 
@@ -49,10 +90,13 @@ function hlBoard(bd) {
     if ($(bd).length == 0) {
         var b = bd.substr(1);
         var bn = bd.substr(3);
-        $("#navcon").append('<a id="'+b+'" class="hBoard" href="#http://155.35.87.121:8000/iboard/'+bn+'/6">'+bn+'</a>');
+        $("#navcon ul").append('<li><a id="'+b+'" class="hBoard" href="#http://155.35.87.121:8000/iboard/'+bn+'/6">'+bn+'</a></li>');
+        setLayout();
     }
-    $(bd).siblings().css({"background": "", "color": "","text-shadow":""});
-    $(bd).css({"background": "#0099FF", "color": "white","text-shadow":"gray 0px 1px 1px;"});
+    //$(bd).parent().siblings().find("a").css({"background": "", "color": "","text-shadow":""});
+    $(bd).parent().siblings().find("a").removeClass("highlight");
+    $(bd).addClass("highlight");
+    //$(bd).css({"background": "#0099FF", "color": "white", "text-shadow":"gray 0px 1px 1px;"});
     var curLeft = $(bd).position().left;
     if (curLeft > $(window).width() - 90 || curLeft < 0)
         $('#navcon').scrollLeft(curLeft - 30);
@@ -120,11 +164,21 @@ function loadPost(path)
 
 function nav2left()
 {
-    $('#navcon').scrollLeft($('#navcon').scrollLeft() - $('#navcon').width());
+    var l = $('#navcon').scrollLeft() - $('#navcon').width();
+    $("#navcon").animate({scrollLeft: l}, 500);
+    $("#magic-line").css("left", l).data("origLeft", l);
+
 }
 
 function nav2right()
 {
-    $('#navcon').scrollLeft($('#navcon').width() + $('#navcon').scrollLeft());
+    var l = $('#navcon').width() + $('#navcon').scrollLeft();
+    $("#navcon").animate({scrollLeft: l}, 500);
+    $("#magic-line").css("left", l).data("origLeft", l);
+
 }
 
+function showTool()
+{
+    $('#toolbox').slideToggle( function () {$("#boardtogo").focus();});
+}
