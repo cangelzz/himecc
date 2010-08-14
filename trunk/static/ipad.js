@@ -148,6 +148,7 @@ function loadBoard(path)
         $("li", this).mouseout(function(){$(this).css("background","")});    
         var m = path.match(/(iboard|isubject|board)\/(.*?)\//);
         if (m) hlBoard("#hb"+m[2].toLowerCase());
+        $(this).scrollTop(0);
     });
 }
 
@@ -156,6 +157,7 @@ function loadSubject(path)
     $('#divPosts').load(path, function(){
         var m = path.match(/(iboard|isubject)\/(.*?)\//);
         if (m) hlBoard("#hb"+m[2].toLowerCase());
+        $(this).scrollTop(0);
     });
 }
 
