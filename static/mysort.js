@@ -9,7 +9,7 @@ function sortul(ulid)
             ul.appendChild(lis[i]);
     }
     
-    var as = ul.parentElement.getElementsByClassName("btnCenterLeft");
+    var as = ul.parentElement.getElementsByClassName("btnCenter0 fleft");
     for (var a=0;a<as.length;a++)
     {
         var cname = as[a].className;
