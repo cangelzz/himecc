@@ -16,7 +16,8 @@ $(document).ready(function(){
     $('#progress').ajaxComplete(function() {
         $(this).hide();
 
-        $("#divPosts h1.nav a.btnCenter0").remove();
+        $("#divPosts h1.nav a.boardname").remove();
+
         $("#boardh1").remove();
 
         bind_a();
