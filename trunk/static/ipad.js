@@ -1,4 +1,6 @@
-$(document).ready(function(){
+var os = 1;
+    
+$(document).ready(function() {
 
     $(window).hashchange(function () {
         //alert(location.hash);
@@ -37,47 +39,50 @@ $(document).ready(function(){
     
     setLayout();
 
-        $(function() {
-        
-            var $el, leftPos, newWidth,
-            $mainNav2 = $("#example-two");
-        
-            $mainNav2.append("<li id='magic-line'></li>");
-    
-            var $magicLineTwo = $("#magic-line");
-        
-            $magicLineTwo
-                .css("left", $("#navcon").position().left)
-                .data("origLeft", $("#navcon").position().left)
-                .data("origWidth", $magicLineTwo.width())
-                .data("origColor", "#3C6");
-                        
-            $("#example-two li").find("a").hover(function() {
-                $el = $(this);
-                leftPos = $el.position().left;
-                newWidth = $el.parent().width();
-                $magicLineTwo.stop().animate({
-                    left: leftPos,
-                    width: newWidth,
-                    backgroundColor: $el.attr("rel")
-                })
-            }, function() {
-                $magicLineTwo.stop().animate({
-                    left: $magicLineTwo.data("origLeft"),
-                    width: $magicLineTwo.data("origWidth"),
-                    backgroundColor: $magicLineTwo.data("origColor")
-                });    
-            });
-
-        });
-            
-
-    if (navigator.userAgent.match(/Chrome/i)) { 
+    if (navigator.userAgent.match(/Chrome/i)) {
+        os = 2;
+        slideNav();
         return;
     }
     $("#divThreads").jScrollTouch();
     $("#divPosts").jScrollTouch();
 });
+
+function slideNav() {
+    $(function() {
+
+    var $el, leftPos, newWidth,
+    $mainNav2 = $("#example-two");
+
+    $mainNav2.append("<li id='magic-line'></li>");
+
+    var $magicLineTwo = $("#magic-line");
+
+    $magicLineTwo
+        .css("left", $("#navcon").position().left)
+        .data("origLeft", $("#navcon").position().left)
+        .data("origWidth", $magicLineTwo.width())
+        .data("origColor", "#3C6");
+                
+    $("#example-two li").find("a").hover(function() {
+        $el = $(this);
+        leftPos = $el.position().left;
+        newWidth = $el.parent().width();
+        $magicLineTwo.stop().animate({
+            left: leftPos,
+            width: newWidth,
+            backgroundColor: $el.attr("rel")
+        })
+    }, function() {
+        $magicLineTwo.stop().animate({
+            left: $magicLineTwo.data("origLeft"),
+            width: $magicLineTwo.data("origWidth"),
+            backgroundColor: $magicLineTwo.data("origColor")
+        });    
+    });
+
+});
+}
 
 function setLayout() {
     $("#navcon").css("width", $(window).width() - 90);
@@ -171,7 +176,7 @@ function nav2left()
 {
     var l = $('#navcon').scrollLeft() - $('#navcon').width();
     $("#navcon").animate({scrollLeft: l}, 500);
-    $("#magic-line").css("left", l).data("origLeft", l);
+    if (os != 1)  $("#magic-line").css("left", l).data("origLeft", l);
 
 }
 
@@ -179,7 +184,7 @@ function nav2right()
 {
     var l = $('#navcon').width() + $('#navcon').scrollLeft();
     $("#navcon").animate({scrollLeft: l}, 500);
-    $("#magic-line").css("left", l).data("origLeft", l);
+    if (os != 1)  $("#magic-line").css("left", l).data("origLeft", l);
 
 }
 
