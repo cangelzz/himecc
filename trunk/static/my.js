@@ -37,3 +37,11 @@ function toggleComment() {
         $("a.excomments").text("+");
     }
 }
+
+function toggleCommentSingle(id) {
+    var ap = $("a#"+id);
+    if (ap.text() == "+")
+        ap.text("-");
+    else ap.text("+");
+    ap.next().toggle();
+}

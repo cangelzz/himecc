@@ -344,7 +344,7 @@ def _content_html(li, rtype, lz=None, option={}):
         if li[2] != "":
             if option.get("hideRefer", True):
                 random_id = str(random())[2:]
-                refer = "<a id='%s' class='normal excomments' href='javascript:$(\"#%s\").next().toggle();'>+</a>" % (random_id, random_id) + "<div class='hidecomments'>" + li[2] + "</div>"
+                refer = "<a id='%s' class='normal excomments' href='javascript:toggleCommentSingle(\"#%s\");'>+</a>" % (random_id, random_id) + "<div class='hidecomments'>" + li[2] + "</div>"
             else:
                 refer = "<span style='color:grey'><br/>" + li[2] + "</span>"
         return au_html + "<span style='margin:0px;padding:0px;'>%s" % (li[1]) + refer + li[3] + "</span>"
