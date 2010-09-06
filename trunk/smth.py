@@ -435,8 +435,8 @@ def _subject(path, rtype=0, lz=None, option={}):
                     s.append("<a href='/subject/%s/%s/%d%s'>%s</a>" % (bname, gid, i, lz,i))
                 i = i + 1
             return "&nbsp;&nbsp;".join(s)
-        boardLink = "<a href='javascript:sortul(\"posts_ul\")' class='btnCenter0 fleft btnSortAZ'>∴</a><a href='#' class='btnCenter0 fleft' id='expandall'>≡</a><a class='btnCenter0 __LEFT__ boardname' href='/'>H</a><a class='btnCenter0 boardname __LEFT__' href='/board/%s/6'>B</a>" % board
-        boardLink += "<script>$(\"#expandall\").toggle(function(){$(\".hidecomments\").show(300);$(this).text(\"－\"); $(\"a.excomments\").text(\"-\");}, function(){$(\".hidecomments\").hide(300);$(this).text(\"≡\");$(\"a.excomments\").text(\"+\");});</script>";
+        boardLink = "<a href='javascript:sortul(\"posts_ul\")' class='btnCenter0 fleft btnSortAZ'>∴</a><a href='javascript:;' class='btnCenter0 fleft expandall'>≡</a><a class='btnCenter0 __LEFT__ boardname' href='/'>H</a><a class='btnCenter0 boardname __LEFT__' href='/board/%s/6'>B</a>" % board
+        boardLink += "<script>$(\".expandall\").toggle(function(){$(\".hidecomments\").show(300);$(this).text(\"－\"); $(\"a.excomments\").text(\"-\");}, function(){$(\".hidecomments\").hide(300);$(this).text(\"≡\");$(\"a.excomments\").text(\"+\");});</script>";
         if curPage == 1:
             if curPage == totalPage:
                 navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink.replace("__LEFT__", "left54")
