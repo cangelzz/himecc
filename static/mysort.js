@@ -15,10 +15,12 @@ function sortul(ulid)
         var cname = as[a].className;
         if (cname.match(/btnSortAZ/)) {
             as[a].className = cname.replace("btnSortAZ", "btnSortZA"); 
+            as[a].innerText = "∵";
             continue;
         }
         if (cname.match(/btnSortZA/)) {
             as[a].className = cname.replace("btnSortZA", "btnSortAZ");
+            as[a].innerText = "∴";
             continue;
         }
     }

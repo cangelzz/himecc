@@ -27,7 +27,7 @@ $(document).ready(function() {
         if ($('#snavbottom').length > 0) {
             if ($('#snavbottom').position().top < $('#divPosts').height() || $("#snavtop:first-child").length == 0) {
                 $('#snavbottom').remove();
-                $('#snavtop').remove();
+                //$('#snavtop').remove();
             }            
         }
     

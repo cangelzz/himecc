@@ -114,6 +114,11 @@ div.floatright
     text-align: left;
 }
 
+.hidecomments {
+    color: gray;
+    display:none;
+}
+
 
 form {margin:0px;}
 
@@ -325,6 +330,11 @@ li a.normal {
 .left50 {
     position:relative;
     left: -50px;
+}
+
+.left54 {
+    position:relative;
+    left: -54px;
 }
 
 .left32 {

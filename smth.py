@@ -19,7 +19,7 @@ import logging
 
 DEBUG = False
 
-myHeader = commonHeader + '<script src="/static/mysort.js"></script>' + "</head><body>"
+myHeader = commonHeader + '<script src="/static/mysort.js"></script><script src="/static/jquery.js"></script>' + "</head><body>"
 
 from google.appengine.api import users
 def _login_info(request, device=None):
@@ -214,9 +214,9 @@ def _board(path, rtype=0):
         nextPage = "/".join(isLast and ["board", board, paras[3]] or ["board", board, paras[3], str(int(page) + 1)])
 
         if (isLast):
-            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sortul(\"threads_ul\")' class='btnCenter0 fleft btnSortAZ'>◇</a><a class='btnCenter0 left36 boardname' href='/'>H</a>%s</h1>" % (lastPage, boardlink)
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sortul(\"threads_ul\")' class='btnCenter0 fleft btnSortAZ'>∴</a><a class='btnCenter0 left36 boardname' href='/'>H</a>%s</h1>" % (lastPage, boardlink)
         else:
-            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sortul(\"threads_ul\")' class='btnCenter0 fleft btnSortAZ'>◇</a><a class='btnCenter0 left18 boardname' href='/'>H</a>%s<a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, boardlink.replace("left36","left18"), nextPage)
+            navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='javascript:sortul(\"threads_ul\")' class='btnCenter0 fleft btnSortAZ'>∴</a><a class='btnCenter0 left18 boardname' href='/'>H</a>%s<a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastPage, boardlink.replace("left36","left18"), nextPage)
 
         navlink_top = head + navlink
         page = ["<ul class='threads' id='threads_ul'>"]
@@ -342,7 +342,7 @@ def _content_html(li, rtype, lz=None, option={}):
         if li[2] != "":
             if option.get("hideRefer", True):
                 random_id = str(random())[2:]
-                refer = "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'><br/>" + li[2] + "</span></a>"
+                refer = "<a id='%s' class='normal excomments' href='javascript:$(\"#%s\").next().toggle(300);'>+</a>" % (random_id, random_id) + "<div class='hidecomments'>" + li[2] + "</div>"
             else:
                 refer = "<span style='color:grey'><br/>" + li[2] + "</span>"
         return au_html + "<span style='margin:0px;padding:0px;'>%s" % (li[1]) + refer + li[3] + "</span>"
@@ -376,7 +376,7 @@ def _content_collection(bid, id, option={}):
                 st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
                 if option.get("hideRefer", True):
                     random_id = str(random())[2:]
-                    p = p[:inx].replace("<br/>", "") + "<a id='%s' class='normal' href=\"javascript:document.getElementById('%s').firstElementChild.style.display='inline'\">+" % (random_id, random_id) + "<span style='color:grey;display:none;'>" + "<br/>" + st + "</span></a>"
+                    p = p[:inx].replace("<br/>", "") + "<a id='%s' class='normal excomments' href='javascript:$(\"#%s\").next().toggle(300);'>+</a>" % (random_id, random_id) + "<div class='hidecomments'>" + "" + st + "</div>"
                 else:
                     p = p[:inx].replace("<br/>", "") + "<span style='color:grey'><br/>" + st + "</span>"
             au = re.search("(^[\w\d]+.*?\)).*?提到:", p)
@@ -435,10 +435,11 @@ def _subject(path, rtype=0, lz=None, option={}):
                     s.append("<a href='/subject/%s/%s/%d%s'>%s</a>" % (bname, gid, i, lz,i))
                 i = i + 1
             return "&nbsp;&nbsp;".join(s)
-        boardLink = "<a href='javascript:sortul(\"posts_ul\")' class='btnCenter0 fleft btnSortAZ'>◇</a><a class='btnCenter0 __LEFT__ boardname' href='/'>H</a><a class='btnCenter0 boardname __LEFT__' href='/board/%s/6'>B</a>" % board
+        boardLink = "<a href='javascript:sortul(\"posts_ul\")' class='btnCenter0 fleft btnSortAZ'>∴</a><a href='#' class='btnCenter0 fleft' id='expandall'>≡</a><a class='btnCenter0 __LEFT__ boardname' href='/'>H</a><a class='btnCenter0 boardname __LEFT__' href='/board/%s/6'>B</a>" % board
+        boardLink += "<script>$(\"#expandall\").toggle(function(){$(\".hidecomments\").show(300);$(this).text(\"－\"); $(\"a.excomments\").text(\"-\");}, function(){$(\".hidecomments\").hide(300);$(this).text(\"≡\");$(\"a.excomments\").text(\"+\");});</script>";
         if curPage == 1:
             if curPage == totalPage:
-                navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink.replace("__LEFT__", "left36")
+                navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink.replace("__LEFT__", "left54")
                 navlink_bottom = navlink
             else:
                 nextPage = "/".join(["subject", board, gid, "2"]) + lz_link
@@ -449,7 +450,7 @@ def _subject(path, rtype=0, lz=None, option={}):
                 lastnum = curPage - 1
                 lastPage = "/".join(["subject", board, gid, str(lastnum)]) + lz_link
                 navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>%d</a>%s<a class='btnCenter0 fright' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, lastnum, boardLink.replace("__LEFT__","left18"), makejumplist(curPage, totalPage, board, gid))
-                navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>%d</a>%s<a class='btnCenter0 fright' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastnum, boardLink.replace("__LEFT__","left18"))
+                navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='javascript:history.go(-1)' class='btnLeft0'>%d</a>%s<a class='btnCenter0 fright' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastnum, boardLink.replace("__LEFT__","left36"))
             else:
                 lastnum = curPage - 1
                 nextnum = curPage + 1
@@ -521,7 +522,7 @@ def _post(path, rtype=0):
         firstPost = "/".join(["post", bid, gid])
         expandPost = "/".join(["subject", board, gid])
         boardlink = "/".join(["board", board, "0"])
-        navlink = "<h1>%s</h1>" %title + "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenter0 fleft'>1</a><a href='/%s' class='btnCenter0 fleft'>+</a><a href='/%s' class='btnCenter0 btnCenter2 boardname'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
+        navlink = "<h1>%s</h1>" %title + "<h1 class='nav'><a href='/%s' class='btnLeft0'>&lt;</a><a href='/%s' class='btnCenter0 fleft'>1</a><a href='/%s' class='btnCenter0 fleft'>≡</a><a href='/%s' class='btnCenter0 btnCenter2 boardname'>%s</a><a href='/%s' class='btnRight0'>&gt;</a></h1>" % (lastSubPost,firstPost,expandPost,boardlink,board.upper(),nextSubPost)
         return navlink, "<ul class='posts'><li>" + _content_html(c[6:], 1) + "</li></ul>"
 
 class Post(webapp.RequestHandler):
