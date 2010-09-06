@@ -24,13 +24,6 @@ $(document).ready(function() {
 
         bind_a();
 
-        if ($('#snavbottom').length > 0) {
-            if ($('#snavbottom').position().top < $('#divPosts').height() || $("#snavtop:first-child").length == 0) {
-                $('#snavbottom').remove();
-                //$('#snavtop').remove();
-            }            
-        }
-    
     });
 
     $(window).resize(function() {
@@ -164,6 +157,12 @@ function loadSubject(path)
         var m = path.match(/(iboard|isubject)\/(.*?)\//);
         if (m) hlBoard("#hb"+m[2].toLowerCase());
         $(this).scrollTop(0);
+        if ($('#snavbottom').length > 0) {
+            if ($('#snavbottom').position().top < $('#divPosts').height() ) {
+                $('#snavbottom').remove();
+                //$('#snavtop').remove();
+            }            
+        }
     });
 }
 
