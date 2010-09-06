@@ -19,7 +19,7 @@ import logging
 
 DEBUG = False
 
-myHeader = commonHeader + '<script src="/static/mysort.js"></script><script src="/static/jquery.js"></script>' + "</head><body>"
+myHeader = commonHeader + '<script src="/static/jquery.js"></script><script src="/static/my.js"></script>' + "</head><body>"
 
 from google.appengine.api import users
 def _login_info(request, device=None):
@@ -295,21 +295,23 @@ def _content(bid, id, page=""):
         
         atts = re.findall("attach\('(.*?)',\s(\d+),\s(\d+)\);", content)
         for att in atts:
-            if int(att[1]) > 1000000:
-                attpart = attpart + "<br><span style='color:crimson'>[TOO_LARGE_IMAGE]</span>"
-                continue
             fname = att[0]
             ext = fname[fname.rfind("."):]
             extL = ext.lower()
             if extL == ".jpg" or extL == ".jpeg" or extL == ".bmp" or extL == ".png" or extL == ".gif":
                 att_url = "http://att.newsmth.net/att.php?n.%s.%s.%s" % (bid, id, att[2]) + ext
+
+                if int(att[1]) > 1000000:
+                    attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:crimson'>[TOO_LARGE_IMAGE]</span></a>" % att_url
+                    continue
+
                 try:
                     bindata = fetch(url=att_url, method=urlfetch.GET, deadline=10).content
                 except DownloadError:
-                    attpart = attpart + "<br><span style='color:red'>[DOWNLOAD_ERROR]</span>"
+                    attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:red'>[DOWNLOAD_ERROR]</span></a>" % att_url
                     continue
                 except DeadlineExceededError:
-                    attpart = attpart + "<br><span style='color:red'>[DEADLINE_EXCEEDED_ERROR]</span>"
+                    attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:red'>[DEADLINE_EXCEEDED_ERROR]</span></a>" % att_url
                     continue
                 img = images.Image(bindata)
                 if img.width > 300:
@@ -319,9 +321,9 @@ def _content(bid, id, page=""):
                 try:
                     resizedata = img.execute_transforms(images.JPEG)
                     base64data = base64.encodestring(resizedata)
-                    attpart = attpart + "<br/><img src=\"data:image/jpeg;base64," + base64data + "\">"
+                    attpart = attpart + "<br/><a href='%s' target='_blank'><img src=\"data:image/jpeg;base64," % att_url + base64data + "\"></a>"
                 except RequestTooLargeError: 
-                    attpart = attpart + "<br><span style='color:red'>[TOO_LARGE_IMAGE]</span>"
+                    attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:red'>[TOO_LARGE_IMAGE]</span></a>" % att_url
                 except Exception, err:
                     attpart = attpart + "<br>%s" % err.message
     
@@ -342,7 +344,7 @@ def _content_html(li, rtype, lz=None, option={}):
         if li[2] != "":
             if option.get("hideRefer", True):
                 random_id = str(random())[2:]
-                refer = "<a id='%s' class='normal excomments' href='javascript:$(\"#%s\").next().toggle(300);'>+</a>" % (random_id, random_id) + "<div class='hidecomments'>" + li[2] + "</div>"
+                refer = "<a id='%s' class='normal excomments' href='javascript:$(\"#%s\").next().toggle();'>+</a>" % (random_id, random_id) + "<div class='hidecomments'>" + li[2] + "</div>"
             else:
                 refer = "<span style='color:grey'><br/>" + li[2] + "</span>"
         return au_html + "<span style='margin:0px;padding:0px;'>%s" % (li[1]) + refer + li[3] + "</span>"
@@ -376,7 +378,7 @@ def _content_collection(bid, id, option={}):
                 st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
                 if option.get("hideRefer", True):
                     random_id = str(random())[2:]
-                    p = p[:inx].replace("<br/>", "") + "<a id='%s' class='normal excomments' href='javascript:$(\"#%s\").next().toggle(300);'>+</a>" % (random_id, random_id) + "<div class='hidecomments'>" + "" + st + "</div>"
+                    p = p[:inx].replace("<br/>", "") + "<a id='%s' class='normal excomments' href='javascript:$(\"#%s\").next().toggle();'>+</a>" % (random_id, random_id) + "<div class='hidecomments'>" + "" + st + "</div>"
                 else:
                     p = p[:inx].replace("<br/>", "") + "<span style='color:grey'><br/>" + st + "</span>"
             au = re.search("(^[\w\d]+.*?\)).*?提到:", p)
@@ -435,8 +437,7 @@ def _subject(path, rtype=0, lz=None, option={}):
                     s.append("<a href='/subject/%s/%s/%d%s'>%s</a>" % (bname, gid, i, lz,i))
                 i = i + 1
             return "&nbsp;&nbsp;".join(s)
-        boardLink = "<a href='javascript:sortul(\"posts_ul\")' class='btnCenter0 fleft btnSortAZ'>∴</a><a href='javascript:;' class='btnCenter0 fleft expandall'>≡</a><a class='btnCenter0 __LEFT__ boardname' href='/'>H</a><a class='btnCenter0 boardname __LEFT__' href='/board/%s/6'>B</a>" % board
-        boardLink += "<script>$(\".expandall\").toggle(function(){$(\".hidecomments\").show(300);$(this).text(\"－\"); $(\"a.excomments\").text(\"-\");}, function(){$(\".hidecomments\").hide(300);$(this).text(\"≡\");$(\"a.excomments\").text(\"+\");});</script>";
+        boardLink = "<a href='javascript:sortul(\"posts_ul\")' class='btnCenter0 fleft btnSortAZ'>∴</a><a href='javascript:toggleComment();' class='btnCenter0 fleft expandall'>≡</a><a class='btnCenter0 __LEFT__ boardname' href='/'>H</a><a class='btnCenter0 boardname __LEFT__' href='/board/%s/6'>B</a>" % board
         if curPage == 1:
             if curPage == totalPage:
                 navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink.replace("__LEFT__", "left54")
@@ -553,7 +554,7 @@ ipadHeader = """<html><head>
 <script src="/static/jScrollTouch.js"></script>
 <script src="/static/jquery.ba-hashchange.min.js"></script>
 <script src="/static/ipad.js"></script>
-<script src="/static/mysort.js"></script>
+<script src="/static/my.js"></script>
 """ + tracking + """</head><body class="webkit">"""
 
 def makenav(favorlist):

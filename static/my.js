@@ -24,5 +24,16 @@ function sortul(ulid)
             continue;
         }
     }
+}
 
+function toggleComment() {
+    if ($(".expandall")[0].innerText == "≡") {
+        $(".hidecomments").show();
+        $(".expandall").text("－");
+        $("a.excomments").text("-");
+    } else {
+        $(".hidecomments").hide();
+        $(".expandall").text("≡");
+        $("a.excomments").text("+");
+    }
 }
