@@ -279,9 +279,45 @@ def _content(bid, id, page=""):
         import traceback
         return "<pre>%s</pre>" % traceback.format_exc()
 
+    attpart = ""
+    atts = re.findall("attach\('(.*?)',\s(\d+),\s(\d+)\);", content)
+    for att in atts:
+        fname = att[0]
+        ext = fname[fname.rfind("."):]
+        extL = ext.lower()
+        if extL == ".jpg" or extL == ".jpeg" or extL == ".bmp" or extL == ".png" or extL == ".gif":
+            att_url = "http://att.newsmth.net/att.php?n.%s.%s.%s" % (bid, id, att[2]) + ext
+
+            if int(att[1]) > 1000000:
+                attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:crimson'>[TOO_LARGE_IMAGE]</span></a>" % att_url
+                continue
+
+            try:
+                bindata = fetch(url=att_url, method=urlfetch.GET, deadline=10).content
+            except DownloadError:
+                attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:red'>[DOWNLOAD_ERROR]</span></a>" % att_url
+                continue
+            except DeadlineExceededError:
+                attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:red'>[DEADLINE_EXCEEDED_ERROR]</span></a>" % att_url
+                continue
+            img = images.Image(bindata)
+            if img.width > 300:
+                img.resize(300)
+            else:
+                img.resize(img.width)
+            try:
+                resizedata = img.execute_transforms(images.JPEG)
+                base64data = base64.encodestring(resizedata)
+                attpart = attpart + "<br/><a href='%s' target='_blank'><img src=\"data:image/jpeg;base64," % att_url + base64data + "\"></a>"
+            except RequestTooLargeError: 
+                attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:red'>[TOO_LARGE_IMAGE]</span></a>" % att_url
+            except Exception, err:
+                attpart = attpart + "<br>%s" % err.message
+
+
     reply = ""
     refer = ""
-    attpart = ""
+
     if m:
         s = re.sub(r"(\\n)+", "<br/>", m.group(3).strip("\\n "))
         reply = s #first post
@@ -292,41 +328,7 @@ def _content(bid, id, page=""):
             st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
             reply = s[:inx].strip("<br/>")
             refer = st
-        
-        atts = re.findall("attach\('(.*?)',\s(\d+),\s(\d+)\);", content)
-        for att in atts:
-            fname = att[0]
-            ext = fname[fname.rfind("."):]
-            extL = ext.lower()
-            if extL == ".jpg" or extL == ".jpeg" or extL == ".bmp" or extL == ".png" or extL == ".gif":
-                att_url = "http://att.newsmth.net/att.php?n.%s.%s.%s" % (bid, id, att[2]) + ext
-
-                if int(att[1]) > 1000000:
-                    attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:crimson'>[TOO_LARGE_IMAGE]</span></a>" % att_url
-                    continue
-
-                try:
-                    bindata = fetch(url=att_url, method=urlfetch.GET, deadline=10).content
-                except DownloadError:
-                    attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:red'>[DOWNLOAD_ERROR]</span></a>" % att_url
-                    continue
-                except DeadlineExceededError:
-                    attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:red'>[DEADLINE_EXCEEDED_ERROR]</span></a>" % att_url
-                    continue
-                img = images.Image(bindata)
-                if img.width > 300:
-                    img.resize(300)
-                else:
-                    img.resize(img.width)
-                try:
-                    resizedata = img.execute_transforms(images.JPEG)
-                    base64data = base64.encodestring(resizedata)
-                    attpart = attpart + "<br/><a href='%s' target='_blank'><img src=\"data:image/jpeg;base64," % att_url + base64data + "\"></a>"
-                except RequestTooLargeError: 
-                    attpart = attpart + "<br><a href='%s' target='_blank'><span style='color:red'>[TOO_LARGE_IMAGE]</span></a>" % att_url
-                except Exception, err:
-                    attpart = attpart + "<br>%s" % err.message
-    
+   
     return list(ids) + [title, au, reply, refer, attpart]
     # board, bid, id, gid, reid, title, author, reply, refer, attach
     # 0      1    2   3    4     5      6       7      8      9
@@ -467,7 +469,7 @@ def _subject(path, rtype=0, lz=None, option={}):
 
         #different handle SameSubject posts
         bid = m.group(1)
-        if t.group(1).find("合集") > 0:
+        if t.group(1).find("[合集]") > 0:
             result = _content_collection(bid, posts[0][0], option=option)
             page += result
             posts = posts[1:]
