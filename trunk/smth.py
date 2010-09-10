@@ -469,7 +469,9 @@ def _subject(path, rtype=0, lz=None, option={}):
 
         #different handle SameSubject posts
         bid = m.group(1)
-        if t.group(1).find("[合集]") > 0:
+        logging.log(logging.INFO, t.group(1))
+        bGroup = t.group(1).find("合集")
+        if bGroup > 0 and bGroup < 5:
             result = _content_collection(bid, posts[0][0], option=option)
             page += result
             posts = posts[1:]
