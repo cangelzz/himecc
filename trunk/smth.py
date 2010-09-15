@@ -462,7 +462,7 @@ def _subject(path, rtype=0, lz=None, option={}):
                 navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>%s</a>%s<a href='/%s' class='btnRight0'>%s</a><a class='btnCenter0 fright' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum), makejumplist(curPage, totalPage, board, gid))
                 navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='/%s' class='btnLeft0'>%s</a>%s<a href='/%s' class='btnRight0'>%s</a><a class='btnCenter0 fright' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastPage, str(lastnum), boardLink, nextPage, str(nextnum))
 
-        navlink =  "<h1>%s<a class='navtopic' href='/subject/%s/%s'>&gt;</a><a class='navtopic' href='/subject/%s/%s'>&lt;</a></h1>" % (t.group(1), board, m.group(8), board, m.group(7)) + navlink
+        navlink =  "<h1><div><div style='float:left;width:20px;margin-right:-20px'><a class='navtopic' href='/subject/%s/%s'>&lt;</a></div><div style='float:right;width:20px;margin-left:-20px'><a class='navtopic' href='/subject/%s/%s'>&gt;</a></div><div style='width:auto;margin:0px 20px'>%s</div></div></h1>" % (board, m.group(7), board, m.group(8), t.group(1)) + navlink
         navlink_bottom = navlink_bottom.replace("snavtop", "snavbottom")
 
         page = "<ul class='posts' id='posts_ul'>"
