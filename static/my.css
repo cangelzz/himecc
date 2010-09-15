@@ -40,6 +40,18 @@ a.login {
     -webkit-border-radius:6px; 
 }
 
+h1 a.navtopic {
+    font-family: helvetica, verdana;
+    color: white;
+    margin: 0px 8px;
+    text-shadow: gray 0px 2px 2px;
+    display: inline-block;
+    text-decoration: none;
+    font-weight: bold;
+    float:right;
+    font-size: medium;
+}
+
 h1 input {
     height: 24px;
     font-size:16px;
@@ -265,7 +277,7 @@ li a.normal {
 	
     padding: 0;
     padding-right: 6px;
-	margin: 0px 5px;
+	margin: 0px 3px;
     min-width: 15px;
     max-width: 140px;
 

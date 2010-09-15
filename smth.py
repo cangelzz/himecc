@@ -415,15 +415,15 @@ def _subject(path, rtype=0, lz=None, option={}):
         except DownloadError:
             return "", nav_common, page_404.replace("<!-->", "Download error: <span style='red'>%s</span>" % url)
         t = re.search("<title>.*?-.*?-(.*?)</title>", convertFromGB2312ToUTF8(result.content))
-        m = re.search("tconWriter.*?,(\\d+),\\d+,\\d+,(\\d+),(\\d+),", result.content)
-
+        m = re.search("tconWriter.*?,(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+)", result.content)
+#                                     bid    na      na    totalP  curP   na     prevS  nextS
         if not m:
             msg = r"错误的文章号,原文可能已经被删除"
             page = page_404.replace("<!-->", msg)
             return "", nav_common, page
 
-        totalPage = int(m.group(2))
-        curPage = int(m.group(3))
+        totalPage = int(m.group(4))
+        curPage = int(m.group(5))
 
         posts = re.findall('''\[(\d+),'(.*?)'\]''', result.content)
         lz = (curPage == 1) and posts[0][1] or lz
@@ -439,7 +439,7 @@ def _subject(path, rtype=0, lz=None, option={}):
                     s.append("<a href='/subject/%s/%s/%d%s'>%s</a>" % (bname, gid, i, lz,i))
                 i = i + 1
             return "&nbsp;&nbsp;".join(s)
-        boardLink = "<a href='javascript:sortul(\"posts_ul\")' class='btnCenter0 fleft btnSortAZ'>∴</a><a href='javascript:toggleComment();' class='btnCenter0 fleft expandall'>≡</a><a class='btnCenter0 __LEFT__ boardname' href='/'>H</a><a class='btnCenter0 boardname __LEFT__' href='/board/%s/6'>B</a>" % board
+        boardLink = "<a href='javascript:sortul(\"posts_ul\")' class='btnCenter0 fleft btnSortAZ'>∴</a><a href='javascript:toggleComment();' class='btnCenter0 fleft expandall'>≡</a><a class='btnCenter0 boardname __LEFT__' href='/'>H</a><a class='btnCenter0 boardname __LEFT__' href='/board/%s/6'>B</a>" % (board)
         if curPage == 1:
             if curPage == totalPage:
                 navlink = "<h1 class='nav' id='snavtop'><a href='javascript:history.go(-1)' class='btnLeft0'>&lt;</a>%s</h1>" % boardLink.replace("__LEFT__", "left54")
@@ -462,14 +462,13 @@ def _subject(path, rtype=0, lz=None, option={}):
                 navlink = "<h1 class='nav'><a href='/%s' class='btnLeft0'>%s</a>%s<a href='/%s' class='btnRight0'>%s</a><a class='btnCenter0 fright' href=\"javascript:document.getElementById('hidejump').style.display='block'\">J</a></h1><div id='hidejump' class='hidediv'>%s</div>" % (lastPage, str(lastnum), boardLink, nextPage, str(nextnum), makejumplist(curPage, totalPage, board, gid))
                 navlink_bottom = "<div id='hidejump2' class='hidediv'>%s</div><h1 class='nav'><a href='/%s' class='btnLeft0'>%s</a>%s<a href='/%s' class='btnRight0'>%s</a><a class='btnCenter0 fright' href=\"javascript:document.getElementById('hidejump2').style.display='block'\">J</a></h1>" % (makejumplist(curPage, totalPage, board, gid), lastPage, str(lastnum), boardLink, nextPage, str(nextnum))
 
-        navlink =  "<h1>%s</h1>" % t.group(1) + navlink
+        navlink =  "<h1>%s<a class='navtopic' href='/subject/%s/%s'>&gt;</a><a class='navtopic' href='/subject/%s/%s'>&lt;</a></h1>" % (t.group(1), board, m.group(8), board, m.group(7)) + navlink
         navlink_bottom = navlink_bottom.replace("snavtop", "snavbottom")
 
         page = "<ul class='posts' id='posts_ul'>"
 
         #different handle SameSubject posts
         bid = m.group(1)
-        logging.log(logging.INFO, t.group(1))
         bGroup = t.group(1).find("合集")
         if bGroup > 0 and bGroup < 5:
             result = _content_collection(bid, posts[0][0], option=option)
