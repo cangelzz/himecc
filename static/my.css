@@ -43,12 +43,11 @@ a.login {
 h1 a.navtopic {
     font-family: helvetica, verdana;
     color: white;
-    margin: 0px 8px;
+    padding: 2px 8px;
     text-shadow: gray 0px 2px 2px;
-    display: inline-block;
+    display: block;
     text-decoration: none;
     font-weight: bold;
-    float:right;
     font-size: medium;
 }
 
