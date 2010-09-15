@@ -326,13 +326,21 @@ def _content(bid, id, page=""):
             st = s[inx:]
             refergroup = st.split("<br/>")
             st = len(refergroup) > 3 and "<br/>".join(refergroup[:3]) or st
-            reply = s[:inx].strip("<br/>")
+            #reply = s[:inx].strip("<br/>")
+            reply = _strip(s[:inx], "<br/>")
             refer = st
-   
+    #logging.log(logging.INFO, reply)   
     return list(ids) + [title, au, reply, refer, attpart]
     # board, bid, id, gid, reid, title, author, reply, refer, attach
     # 0      1    2   3    4     5      6       7      8      9
     #                                   0       1      2      3
+
+def _strip(s, fix):
+    st = s
+    while (st.startswith(fix)): st = st[len(fix):]
+    while (st.endswith(fix)): st = st[:-len(fix)]
+    return st
+
 def _content_html(li, rtype, lz=None, option={}):
     if lz and li[0].find(lz) != -1:
         au_html = "<span class='authorlz'>%s</span>: " % li[0]
