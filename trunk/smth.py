@@ -577,7 +577,7 @@ def makenav(favorlist):
 
 ipadBody = """
 <div id="navboard"><div class="navleft"><a href="javascript:nav2left()">&lt;</a></div><div id="navcon"><!--B></div><div class="navright"><a href="javascript:nav2right()">&gt;</a></div><div class="navright"><a href="javascript:showTool();">+</a></div></div>
-<div id="progress" style="display:none"><span>loading ...</span></div>
+<div id="progress">loading ...</div>
 <div id="main">
 
   <div id="divThreads"></div>

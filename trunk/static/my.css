@@ -452,7 +452,9 @@ li a.normal {
     word-wrap: break-word; /* css3 */
 }
 
-.webkit{overflow:hidden;}
+.webkit{overflow:hidden;
+    position:relative;
+}
 
 #navboard {
     min-height:25px;
@@ -576,23 +578,19 @@ border-right:1px solid gray; padding:0px 3px;}
 }
 
 #progress {
+    opacity: 0.9;
+    display:none;
     font-family: helvetica;
     position:absolute;
-    top:0;
-    z-index:100;
-    color: black;
+    z-index:500;
+    color: white;
     text-align: center;
-    left: 50%;
-    top: 50%;
-    margin: -100px 0px 0px -300px;
-}
-
-#progress > * {
-    background: #C0C0C0 url(progress.gif) center 75% no-repeat;
-    -webkit-border-radius:25px;
-    opacity:.8;
-    position: absolute;
-    padding-top: 100px;
-    width: 600px;
-    height: 100px;
-}
+    background: crimson;
+    top:0px;
+    left:50%;
+    font-size: 12px;
+    padding-left: 8px;
+    padding-right: 8px;
+    height:26px;
+    line-height:26px;
+ }
