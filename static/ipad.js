@@ -1,4 +1,5 @@
 var os = 1;
+var loadingcnt = 0;
     
 $(document).ready(function() {
 
@@ -11,12 +12,16 @@ $(document).ready(function() {
  
     bind_a();
 
-    $('#progress').ajaxStart(function() {
-        $(this).show();
-    });
+    //$('#progress').ajaxStart(function() {
+    //    $(this).append("<span>$</span>");
+    //    loadingcnt++;
+    //    $(this).show();
+    //});
 
     $('#progress').ajaxComplete(function() {
-        $(this).hide();
+        $("span", this).last().remove();
+        loadingcnt--;
+        if (loadingcnt <= 0) $(this).hide();
 
         $("#divPosts h1.nav a.boardname").remove();
 
@@ -134,6 +139,9 @@ function bind_a() {
 function loadSmart(path) {
     var m = path.match(/(iboard|isubject)\/(.*?)\//);
     if (m) hlBoard("#hb"+m[2].toLowerCase());
+    $("#progress").append("<span>◆</span>");
+    loadingcnt++;
+    $("#progress").show();
     if (path.match(/iboard/)) loadBoard(path);
     if (path.match(/isubject/)) loadSubject(path);
     if (path.match(/ipost/)) loadPost(path);
