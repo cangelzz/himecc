@@ -136,15 +136,18 @@ function bind_a() {
     });
 }
 
-function loadSmart(path) {
-    var m = path.match(/(iboard|isubject)\/(.*?)\//);
-    if (m) hlBoard("#hb"+m[2].toLowerCase());
+function _showloading() {
     $("#progress").append("<span>◆</span>");
     loadingcnt++;
     $("#progress").show();
-    if (path.match(/iboard/)) loadBoard(path);
-    if (path.match(/isubject/)) loadSubject(path);
-    if (path.match(/ipost/)) loadPost(path);
+}
+
+function loadSmart(path) {
+    var m = path.match(/(iboard|isubject)\/(.*?)\//);
+    if (m) hlBoard("#hb"+m[2].toLowerCase());
+    if (path.match(/iboard/)) {_showloading(); loadBoard(path);}
+    if (path.match(/isubject/)) {_showloading(); loadSubject(path);}
+    if (path.match(/ipost/)) {_showloading(); loadPost(path);}
 }
 
 
