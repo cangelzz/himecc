@@ -192,7 +192,7 @@ def _board(path, rtype=0):
         head = "<h1 id='boardh1'>%s</h1>" % board.upper()
 
         if paras[3] == "0":
-            ftype = ""
+            ftype = "&ftype=0"
             boardlink = "<a class='btnCenter0 left36 btnCenterChosen' href='/board/%s/0'>N </a><a class='btnCenter0 left36' href='/board/%s/6'>S </a>" % (board, board)
         else:
             ftype =  "&ftype=" + paras[3]
